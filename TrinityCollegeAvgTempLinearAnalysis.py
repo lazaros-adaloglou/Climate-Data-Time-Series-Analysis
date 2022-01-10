@@ -1,5 +1,6 @@
 # Imports.
 import pandas as pd
+import numpy as np
 
 # Read Time Series Data from Year 1961 to 2021.
 df = pd.read_csv("data/Glasnevin.csv", delimiter=',')
@@ -19,5 +20,15 @@ print(minTemp)
 
 data = pd.DataFrame({"MaxT": maxTemp, "MinT": minTemp})
 print(data)
-print((data.loc[:, "MaxT"] == " ").index)
-print((data.loc[:, "MinT"] == " ").sum())
+print(data[data.MaxT == " "].index)
+print(data[data.MinT == " "].index)
+
+Index = data[data.MaxT == " "].index.values
+print(Index)
+lista = [Index(1), Index(2), Index(3)]
+print(lista)
+
+for i in lista:
+    data.loc[i, "MaxT"] = (data.loc[i-3:i-1, "MaxT"] + data.loc[i+1:i+3, "MaxT"])/6
+
+print(data[data.MaxT == " "].index)
