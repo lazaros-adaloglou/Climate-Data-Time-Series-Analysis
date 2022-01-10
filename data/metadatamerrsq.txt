@@ -1,0 +1,12 @@
+Station Name: DUBLIN (Merrion Square)	
+Station Height: 13 M 	
+Latitude:53.341  	Longitude: -6.253
+	
+	
+date: -   09 to 09 utc	
+rain: -   Precipitation Amount (mm)	
+maxt: -   Maximum Temperature (C)	
+mint: -   Minimum Temperature (C)	
+gmin: -   09utc Grass Minimum Temperature (C)	
+soil: -   10cm Soil Temperature (C)	
+ind:  -	  Indicator
