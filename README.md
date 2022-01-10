@@ -1,2 +1,2 @@
 # Climate-Data-Time-Series-Analysis
-Time series analysis of weather of 2 places in Dublin
+Linear and Non-Linear Time Series Analysis of Daily Average Temperature in Merrion Square and Trinity College in Dublin.
