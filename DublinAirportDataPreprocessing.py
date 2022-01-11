@@ -1,11 +1,10 @@
 # Imports.
 import pandas as pd
 import numpy as np
-import math
 
-# Read Time Series Data from Year 1961 to 2021.
-data = pd.read_csv('data/Glasnevin.csv', delimiter=',', parse_dates=['date'])
-data = data.loc[7305:37430, ['date', 'maxt', 'mint']]
+# Read Time Series Data from Year 1948 to 2021.
+data = pd.read_csv('data/DublinAirport.csv', delimiter=',', parse_dates=['date'])
+data = data.loc[:, ['date', 'maxtp', 'mintp']]
 data.reset_index(drop=True, inplace=True)
 print("---------------------------------------------------------------------------------------------------------------")
 print("Original Time Series:")
