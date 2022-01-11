@@ -1,7 +1,6 @@
 # Imports.
 import pandas as pd
 import numpy as np
-import math
 
 # Read Time Series Data from Year 1961 to 2021.
 data = pd.read_csv('data/Glasnevin.csv', delimiter=',', parse_dates=['date'])
@@ -104,5 +103,5 @@ date_check = data.date.diff()
 print('\nDate Steps Count:\n')
 print(date_check.value_counts())
 filename = 'data/Glasnevin_Data.csv'
-print('\nData Exported to', filename)
+print('\nData Exported to', filename, '\n')
 data.to_csv(filename)
