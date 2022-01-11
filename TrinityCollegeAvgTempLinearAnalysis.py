@@ -3,32 +3,65 @@ import pandas as pd
 import numpy as np
 
 # Read Time Series Data from Year 1961 to 2021.
-df = pd.read_csv("data/Glasnevin.csv", delimiter=',')
-df = df.loc[7305:37430, ['date', 'maxt', 'mint']]
-
-print(df)
-print((df.loc[:, "maxt"] == " ").sum())
-print((df.loc[:, "mint"] == " ").sum())
-
-df = df.drop(df[(df.maxt == ' ') & (df.mint == ' ')].index)
-print(df)
-
-maxTemp = df.loc[:, "maxt"].values
-minTemp = df.loc[:, "mint"].values
-print(maxTemp)
-print(minTemp)
-
-data = pd.DataFrame({"MaxT": maxTemp, "MinT": minTemp})
+data = pd.read_csv('data/Glasnevin.csv', delimiter=',', parse_dates=['date'])
+data = data.loc[7305:37430, ['date', 'maxt', 'mint']]
+data.reset_index(drop=True, inplace=True)
+print("---------------------------------------------------------------------------------------------------------------")
+print("Time Series:")
 print(data)
-print(data[data.MaxT == " "].index)
-print(data[data.MinT == " "].index)
+print("---------------------------------------------------------------------------------------------------------------")
 
-Index = data[data.MaxT == " "].index.values
-print(Index)
-lista = [Index(1), Index(2), Index(3)]
-print(lista)
+# Data Preprocessing.
+# Check the Dates.
+data['date'] = pd.to_datetime(data['date']).dt.date
+print('Start Date:')
+print(data['date'].min())
+print('\nEnd Date:')
+print(data['date'].max())
+print('\nDays Count:')
+print((data['date'].max()-data['date'].min()).days)
+date_check = data.date.diff()
+print("---------------------------------------------------------------------------------------------------------------")
+print('Row by Row Difference:')
+print(date_check)
+print('\nDifference Count:')
+print(date_check.value_counts())
 
-for i in lista:
-    data.loc[i, "MaxT"] = (data.loc[i-3:i-1, "MaxT"] + data.loc[i+1:i+3, "MaxT"])/6
+# Check Missing Values.
+data['maxt'] = pd.to_numeric(data['maxt'], errors='coerce')  # Convert 'space' Character to 'NaN'.
+data['mint'] = pd.to_numeric(data['mint'], errors='coerce')
+print("---------------------------------------------------------------------------------------------------------------")
+print('NaN Values:')
+print('maxt:', data['maxt'].isnull().sum())
+print('mint:', data['mint'].isnull().sum())
 
-print(data[data.MaxT == " "].index)
+# Average Temperature Creation.
+avgTemp = (data['maxt'].values + data['mint'].values)/2
+data.insert(1, "AvgTemp", avgTemp, allow_duplicates=True)
+del data['maxt']
+del data['mint']
+print("---------------------------------------------------------------------------------------------------------------")
+print('Average Temperature Values:')
+print(avgTemp)
+print('\nTime Series:')
+print(data)
+print('\nNaN Values:')
+print('AvgTemp:', data['AvgTemp'].isnull().sum())
+
+# Drop Duplicate Dates with NaN Values.
+# for index in date_check
+# data[(data.AvgTemp == np.nan) & (data.index == date_check[date_check == 0].index)]
+#     data = data.drop(index)
+# print("---------------------------------------------------------------------------------------------------------------")
+# print('Time Series:')
+# print(data)
+
+# Index = data[data.MaxT == " "].index
+# print(Index)
+# lista = [Index(1), Index(2), Index(3)]
+# print(lista)
+#
+# for i in lista:
+#     data.loc[i, "MaxT"] = (data.loc[i-3:i-1, "MaxT"] + data.loc[i+1:i+3, "MaxT"])/6
+#
+# print(data[data.MaxT == " "].index)
