@@ -87,7 +87,7 @@ for day in days:
     counter = 0
     for year in years:
         val = data.loc[365 * year + day - 1, 'AvgTemp']
-        if not math.isnan(val):
+        if not pd.isnull(val):
             avgVal[day] = avgVal[day] + val
             counter = counter + 1
     avgVal[day] = avgVal[day] / counter
@@ -103,5 +103,6 @@ print('\nNaN Values After Filling Them:', data['AvgTemp'].isnull().sum())
 date_check = data.date.diff()
 print('\nDate Steps Count:\n')
 print(date_check.value_counts())
-print('\nData Exported to "data.csv".')
-data.to_csv('data.csv')
+filename = 'data/Glasnevin_Data.csv'
+print('\nData Exported to', filename)
+data.to_csv(filename)
