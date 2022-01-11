@@ -1,0 +1,24 @@
+Station Name: DUBLIN AIRPORT		
+Station Height: 71 M 		
+Latitude:53.428  	Longitude: -6.241	
+		
+		
+date:   -  00 to 00 utc		
+rain:   -  Precipitation Amount (mm)		
+maxtp:  -  Maximum Air Temperature (C)	  	
+mintp:  -  Minimum  Air Temperature (C)		
+gmin:   -  09utc Grass Minimum Temperature (C)		
+soil:   -  Mean 10cm Soil Temperature (C)		
+wdsp:   -  Mean Wind Speed (knot)		
+hm:     -  Highest ten minute mean wind speed (knot)		                 
+ddhm:   -  Wind Direction at max 10 min. mean (deg)                  		
+hg:     -  Highest Gust (knot)		
+cbl:    -  Mean CBL Pressure (hpa)		
+sun:    -  Sunshine duration (hours)		
+g_rad:  -  Global Radiation (j/cm sq.)		
+pe:     -  Potential Evapotranspiration (mm)		
+evap:   -  Evaporation (mm)		
+smd_wd: -  Soil Moisture Deficits(mm) well drained		
+smd_md: -  Soil Moisture Deficits(mm) moderately drained		
+smd_pd: -  Soil Moisture Deficits(mm) poorly drained 		
+ind:    -  Indicator (i)		
