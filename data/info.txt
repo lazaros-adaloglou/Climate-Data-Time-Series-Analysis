@@ -1,2 +1,0 @@
-BTCUSDT
-daily close values of Bitcoin
