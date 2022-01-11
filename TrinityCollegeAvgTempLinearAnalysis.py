@@ -48,21 +48,15 @@ print(data)
 print('\nNaN Values:')
 print('AvgTemp:', data['AvgTemp'].isnull().sum())
 
-# Drop Duplicate Dates with NaN Values.
+# Drop Duplicate Dates.
 for index in np.arange(1, len(date_check)):
     if date_check[index].days == 0:
-        data.drop(index)
+        data = data.drop(index)
 
 print("---------------------------------------------------------------------------------------------------------------")
 print('Time Series:')
 print(data)
 
-# Index = data[data.MaxT == " "].index
-# print(Index)
-# lista = [Index(1), Index(2), Index(3)]
-# print(lista)
-#
-# for i in lista:
-#     data.loc[i, "MaxT"] = (data.loc[i-3:i-1, "MaxT"] + data.loc[i+1:i+3, "MaxT"])/6
-#
-# print(data[data.MaxT == " "].index)
+# Fill Missing Values.
+
+
