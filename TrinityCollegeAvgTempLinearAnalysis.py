@@ -49,12 +49,13 @@ print('\nNaN Values:')
 print('AvgTemp:', data['AvgTemp'].isnull().sum())
 
 # Drop Duplicate Dates with NaN Values.
-# for index in date_check
-# data[(data.AvgTemp == np.nan) & (data.index == date_check[date_check == 0].index)]
-#     data = data.drop(index)
-# print("---------------------------------------------------------------------------------------------------------------")
-# print('Time Series:')
-# print(data)
+for index in np.arange(1, len(date_check)):
+    if date_check[index].days == 0:
+        data.drop(index)
+
+print("---------------------------------------------------------------------------------------------------------------")
+print('Time Series:')
+print(data)
 
 # Index = data[data.MaxT == " "].index
 # print(Index)
