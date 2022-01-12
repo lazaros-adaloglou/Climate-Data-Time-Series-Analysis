@@ -1,6 +1,7 @@
 # Imports.
 import pandas as pd
 import numpy as np
+import math
 
 # Read Time Series Data from Year 1961 to 2021.
 data = pd.read_csv('data/Glasnevin.csv', delimiter=',', parse_dates=['date'])
@@ -89,7 +90,7 @@ for day in days:
         if not pd.isnull(val):
             avgVal[day] = avgVal[day] + val
             counter = counter + 1
-    avgVal[day] = avgVal[day] / counter
+    avgVal[day] = math.ceil((avgVal[day] / counter)*100)/100
 
 avgData = pd.DataFrame({'AvgVal': avgVal})
 
