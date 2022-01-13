@@ -1,7 +1,9 @@
 # Imports.
-import os
 import pandas as pd
-import numpy as np
+import os
+
+# Print Path.
+print(os.getcwd())
 
 filename = 'data/Glasnevin_Data.csv'
 
