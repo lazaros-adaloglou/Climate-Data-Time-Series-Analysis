@@ -95,7 +95,7 @@ date_check = data.date.diff()
 print('\nDate Steps Count:')
 print(date_check.value_counts())
 
-# Export Preprocessed Time Series.
+# Export Preprocessed Time Series..
 print("---------------------------------------------------------------------------------------------------------------")
 filename = 'data/Glasnevin_Data.csv'
 print('\nData Exported to', filename, '\n')
