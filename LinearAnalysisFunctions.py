@@ -1,4 +1,7 @@
+from statsmodels.tsa.stattools import acf
 import matplotlib.pyplot as plt
+from scipy.stats import norm
+import numpy as np
 
 
 # Plot Time Series.
@@ -24,3 +27,4 @@ def plot_histogram(x, value, title='', savepath=''):
         plt.title(title, x=0.5, y=1.0)
     if len(savepath) > 0:
         plt.savefig(f'{savepath}/{title} Histogram.png')
+
