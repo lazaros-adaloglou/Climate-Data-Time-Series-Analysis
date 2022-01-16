@@ -29,13 +29,13 @@ x = data.AvgTemp
 savepath = 'data/'
 value = 'AvgTemp'
 
-# # Plot Average Temperature.
-# lf.plot_timeseries(x, value, 'Average Temperature', savepath)
-# plt.show()
+# Plot Average Temperature.
+lf.plot_timeseries(x, value, 'Average Temperature', savepath)
+plt.show()
 
-# # Average Temperature Histogram.
-# lf.plot_histogram(x, value, 'Average Temperature', savepath)
-# plt.show()
+# Average Temperature Histogram.
+lf.plot_histogram(x, value, 'Average Temperature', savepath)
+plt.show()
 
 plot_acf(x, zero=False, lags=10)
 plt.show()
