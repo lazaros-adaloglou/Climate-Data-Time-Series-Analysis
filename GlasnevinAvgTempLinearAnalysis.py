@@ -45,3 +45,7 @@ n = 1000
 sd_noise = 1
 mux = 0
 xV = np.random.normal(0, sd_noise, n) + mux
+
+# Random Walk.
+xV = np.cumsum(xV)
+
