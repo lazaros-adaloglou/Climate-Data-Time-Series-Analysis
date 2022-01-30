@@ -32,4 +32,4 @@ plt.show()
 lf.plot_histogram(x, value, 'Average Temperature', savepath)
 plt.show()
 
-# Remove Trend
+# Remove Trend.
