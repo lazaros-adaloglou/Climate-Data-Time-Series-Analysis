@@ -27,11 +27,11 @@ savepath = 'data/'
 strings = ['AvgTemp (°C)', 'Average Temperature']
 
 # Plot Average Temperature.
-lf.plot_timeseries(x, strings[0], strings[1], savepath)
+lf.plot_timeseries(x)
 plt.show()
 
 # Average Temperature Histogram.
-lf.plot_histogram(x, strings[0], strings[1], savepath)
+lf.plot_histogram(x)
 plt.show()
 
 # Remove Trend.
