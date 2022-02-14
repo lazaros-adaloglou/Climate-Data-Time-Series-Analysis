@@ -5,11 +5,18 @@ import numpy as np
 
 
 # Plot Time Series.
-def plot_timeseries(x, value='', title='', savepath=''):
+def plot_timeseries(x, value='', title='', savepath='', dates=None, zoomx=False, color='C0'):
 
-    plt.plot(x, marker='x', linestyle='--', linewidth=1)
-    plt.xlabel('Time (Days)')
+    if dates is not None:
+        plt.plot(dates, x, color=color, marker='x', linestyle='--', linewidth=1)
+        plt.gcf().autofmt_xdate()
+    else:
+        plt.plot(x, color=color, marker='x', linestyle='--', linewidth=1)
+        plt.xlabel('Time (Days)')
     plt.ylabel(value)
+    if zoomx is True:
+        left, right = plt.xlim()
+        plt.xlim(right/2, right/2+right/3.5)
     if len(title) > 0:
         plt.title(title, x=0.5, y=1.0)
     if len(savepath) > 0:
@@ -25,7 +32,7 @@ def plot_histogram(x, value, title='', savepath=''):
     if len(title) > 0:
         plt.title(title, x=0.5, y=1.0)
     if len(savepath) > 0:
-        plt.savefig(f'{savepath}/{title} Histogram.png')
+        plt.savefig(f'{savepath}/{title}.png')
 
 
 # Returns the Moving Average of a Time Series x with Length of Window.
