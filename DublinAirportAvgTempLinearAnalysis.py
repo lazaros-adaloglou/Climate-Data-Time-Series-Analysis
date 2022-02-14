@@ -23,15 +23,17 @@ print(data)
 # Define Average Temperature Time Series.
 x = data.AvgTemp.values
 x_df = pd.DataFrame({data.AvgTemp.name: x})
-savepath = 'data/'
-strings = ['AvgTemp (°C)', 'Average Temperature']
+strings = ['AvgTemp (°C)', 'Average Temperature', 'data/']
 
 # Plot Average Temperature.
-lf.plot_timeseries(x)
+lf.plot_timeseries(x, strings[0], strings[1], strings[2])
 plt.show()
 
 # Average Temperature Histogram.
-lf.plot_histogram(x)
+lf.plot_histogram(x, strings[0], strings[1], strings[2])
+plt.show()
+
+# Average Temperature Autocorrelation.
 plt.show()
 
 # Remove Trend.
