@@ -48,7 +48,7 @@ def polynomial_fit(x, p):
 
     n = x.shape[0]
     x = x[:]
-    if p > 1:
+    if p > 0:
         tv = np.arange(n)
         bv = np.polyfit(x=tv, y=x, deg=p)
         muv = np.polyval(p=bv, x=tv)
