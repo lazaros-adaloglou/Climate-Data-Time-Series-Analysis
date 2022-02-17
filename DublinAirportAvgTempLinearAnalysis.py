@@ -194,6 +194,12 @@ for i in range(7, len(varis1), 9):
 plt.plot(fd)
 title = f'Differences of Logarithms'
 plt.title(title, x=0.5, y=1.0)
+plt.xlim(14000, 16000)
 plt.legend(['Differences of Logarithms'])
 plt.savefig(f'{savepath}/{title}.png')
 plt.show()
+
+# Hypothesis for white noise.
+acvf = lf.get_acf(fd)
+plt.show()
+

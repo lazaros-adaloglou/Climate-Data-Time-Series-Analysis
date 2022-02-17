@@ -77,3 +77,18 @@ def get_acf(x, lags=10, alpha=0.05, show=True):
         ax.legend()
     return acfv
 
+
+# Computes the periodic time series comprised of repetetive patterns of seasonal components given a time series and
+# the season (period).
+def seasonal_components(x, period):
+
+    n = x.shape[0]
+    sv = np.full(shape=(n,), fill_value=np.nan)
+    monv = np.full(shape=(period,), fill_value=np.nan)
+    for i in np.arange(period):
+        monv[i] = np.mean(x[i:n:period])
+    monv = monv - np.mean(monv)
+    for i in np.arange(period):
+        sv[i:n:period] = monv[i] * np.ones(shape=len(np.arange(i, n, period)))
+    return sv
+
