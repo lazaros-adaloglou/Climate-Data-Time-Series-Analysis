@@ -7,6 +7,7 @@ import datetime as dt
 import pandas as pd
 import numpy as np
 import warnings
+import csv
 import os
 
 # Suppress Warnings.
@@ -114,32 +115,32 @@ plt.xlim(15000, 18000)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show()
 
-# First Differences.
-fd = np.diff(x)
+# Differences of Logarithms (Increment each zero with 0.001).
+logx = []
+for i in range(0, len(x)):
+    if x[i] == 0:
+        x[i] = x[i] + 0.001
+    if x[i] < 0:
+        logx.append(-np.log(abs(x[i])))
+    else:
+        logx.append(np.log(x[i]))
+fd = np.diff(logx)
 
-# MA vs First Differences.
+# MA vs Differences of Logarithms.
+window = 105
+ma = lf.rolling_window(x, window)
 plt.plot(x-ma, alpha=0.5)
 plt.plot(fd, alpha=0.5)
 plt.xlim(15000, 16000)
-title = f'First Differences vs MA ({window})'
+title = f'Differences of Logarithms vs MA ({window})'
 plt.title(title, x=0.5, y=1.0)
-plt.legend([f'MA ({window}) Detrended', 'First Differences Detrended'])
+plt.legend([f'MA ({window}) Detrended', 'Differences of Logarithms Detrended'])
 plt.savefig(f'{savepath}/{title}.png')
 plt.show()
 
-# MA vs First Differences.
-plt.plot(x-ma, alpha=0.3)
-plt.plot(fd, alpha=0.3)
-plt.xlim(15000, 16000)
-title = f'First Differences vs MA ({window})'
-plt.title(title, x=0.5, y=1.0)
-plt.legend([f'MA ({window}) Detrended', 'First Differences Detrended'])
-plt.savefig(f'{savepath}/{title}.png')
-plt.show()
-
-# Autocorrelation after Detrending with First Differences.
+# Autocorrelation after Detrending with Differences of Logarithms.
 plot_acf(fd, zero=False)
-title = 'Autocorrelation after Detrending with First Differences'
+title = 'Autocorrelation after Detrending with Differences of Logarithms'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show()

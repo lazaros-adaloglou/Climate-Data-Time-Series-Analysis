@@ -1,3 +1,4 @@
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.stattools import acf
 import matplotlib.pyplot as plt
 from scipy.stats import norm
@@ -55,4 +56,24 @@ def polynomial_fit(x, p):
     else:
         muv = np.full(shape=n, fill_value=np.nan)
     return muv
+
+
+# Calculate acf of timeseries xV to lag (lags) and show figure with confidence interval with (alpha).
+def get_acf(x, lags=10, alpha=0.05, show=True):
+
+    acfv = acf(x, nlags=lags)[1:]
+    z_inv = norm.ppf(1 - alpha / 2)
+    upperbound95 = z_inv / np.sqrt(x.shape[0])
+    lowerbound95 = -upperbound95
+    if show:
+        fig, ax = plt.subplots(1, 1, figsize=(14, 8))
+        ax.plot(np.arange(1, lags + 1), acfv, marker='o')
+        ax.axhline(upperbound95, linestyle='--', color='red', label=f'Conf. Int {(1 - alpha) * 100}%')
+        ax.axhline(lowerbound95, linestyle='--', color='red')
+        ax.set_title('ACF')
+        ax.set_xlabel('Lag')
+        ax.set_xticks(np.arange(1, lags + 1))
+        ax.grid(linestyle='--', linewidth=0.5, alpha=0.15)
+        ax.legend()
+    return acfv
 
