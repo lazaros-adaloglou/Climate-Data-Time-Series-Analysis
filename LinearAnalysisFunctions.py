@@ -1,4 +1,5 @@
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.tsa.stattools import acf
 import matplotlib.pyplot as plt
 from scipy.stats import norm
@@ -29,6 +30,7 @@ def plot_histogram(x, value, title='', savepath=''):
 
     plt.hist(x, alpha=0.8, rwidth=0.9)
     plt.xlabel(value)
+    plt.ylabel('Frequency')
     plt.title('Histogram')
     if len(title) > 0:
         plt.title(title, x=0.5, y=1.0)
@@ -91,4 +93,20 @@ def seasonal_components(x, period):
     for i in np.arange(period):
         sv[i:n:period] = monv[i] * np.ones(shape=len(np.arange(i, n, period)))
     return sv
+
+
+# PORTMANTEAULB hypothesis test (H0) for independence of time series: tests jointly that several autocorrelations
+# are zero. It computes the Ljung-Box statistic of the modified sum of autocorrelations up to a maximum lag, for
+# maximum lags 1,2,...,maxtau.
+def portmanteau_test(x, maxtau, show=False):
+
+    ljung_val, ljung_pval = acorr_ljungbox(x, lags=maxtau)
+    if show:
+        fig, ax = plt.subplots(1, 1)
+        ax.scatter(np.arange(len(ljung_pval)), ljung_pval)
+        ax.axhline(0.05, linestyle='--', color='r')
+        ax.set_title('Ljung-Box Portmanteau test')
+        ax.set_yticks(np.arange(0, 1.1))
+        plt.show()
+    return ljung_val, ljung_pval
 

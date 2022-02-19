@@ -39,7 +39,7 @@ lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', 'data/', date_axis
 plt.show()
 
 # Average Temperature Histogram.
-lf.plot_histogram(x, 'Frequency', 'Average Temperature Histogram', 'data/')
+lf.plot_histogram(x, 'AvgTemp (°C)', 'Average Temperature Histogram', 'data/')
 plt.show()
 
 # Plot Zoomed Average Temperature.
@@ -139,15 +139,8 @@ plt.legend([f'MA ({window}) Detrended', 'Differences of Logarithms Detrended'])
 plt.savefig(f'{savepath}/{title}.png')
 plt.show()
 
-# Autocorrelation after Detrending with MA (92).
-mas = x - ma
-acvf = lf.get_acf(mas, lags=31)
-title = 'Autocorrelation after Detrending with MA (92)'
-plt.title(title, x=0.5, y=1.0)
-plt.savefig(f'{savepath}/{title}.png')
-plt.show()
-
 # Print Yearly Mean Average Temperature of detrended and not time series.
+mas = x - ma
 mas_year = []
 years = 80
 days = 365
@@ -199,7 +192,7 @@ plt.savefig(f'{savepath}/{title}.png')
 plt.show()
 plt.plot(fd)
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)'])
-title = 'Logarithms of Detrended Average Temperature Time Series (Increased Resolution)'
+title = 'Logarithms of Detrended Time Series (Increased Resolution)'
 plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 22000)
 plt.ylim(0.8, 3.3)
@@ -228,12 +221,18 @@ for i in range(0, len(fd_year), 9):
     print(fd_year[i])
 
 # Remove Seasonality.
-# r = seasonal_decompose(xr, model='additive', period=365, extrapolate_trend='freq')
-# plt.rcParams.update({'figure.figsize': (10, 10)})
-# r.plot().suptitle('Additive Decomposition', fontsize=22)
-# plt.show()
-
-# Hypothesis for white noise.
-acvf = lf.get_acf(fd, lags=31)
+r = seasonal_decompose(fd, model='additive', period=365, extrapolate_trend='freq')
+plt.rcParams.update({'figure.figsize': (10, 10)})
+r.plot().suptitle('Additive Decomposition', fontsize=22)
 plt.show()
 
+# Hypothesis test for white noise after Detrending with MA (92) and taking the logs.
+# Autocorrelation.
+maxtau = 31
+acvf = lf.get_acf(fd, lags=maxtau)
+title = 'Autocorrelation for log(X_detrended)'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
+plt.show()
+
+pmtestv1, pmtestv2 = lf.portmanteau_test(fd, maxtau, show=True)
