@@ -231,5 +231,5 @@ fd = np.log(mas + abs(min(mas)) + 1)
 # plt.savefig(f'{savepath}/{title}.png')
 # plt.show()
 #
-# # Model Adaption and Forecasting Single Step and Multistep.
+# Model Adaption and Forecasting Single Step and Multistep.
 

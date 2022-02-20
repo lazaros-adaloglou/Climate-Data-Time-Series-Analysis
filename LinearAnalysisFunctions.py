@@ -80,17 +80,33 @@ def get_acf(x, lags=10, alpha=0.05, show=True):
     return acfv
 
 
-# Computes the periodic time series comprised of repetetive patterns of seasonal components given a time series and
-# the season (period).
-def seasonal_components(x, period):
+# # Computes the periodic time series comprised of repetetive patterns of seasonal components given a time series and
+# # the season (period).
+# def seasonal_components(x, period):
+#
+#     n = x.shape[0]
+#     sv = np.full(shape=(n,), fill_value=np.nan)
+#     monv = np.full(shape=(period,), fill_value=np.nan)
+#     for i in np.arange(period):
+#         monv[i] = np.mean(x[i:n:period])
+#     monv = monv - np.mean(monv)
+#     for i in np.arange(period):
+#         sv[i:n:period] = monv[i] * np.ones(shape=len(np.arange(i, n, period)))
+#     return sv
 
-    n = x.shape[0]
-    sv = np.full(shape=(n,), fill_value=np.nan)
-    monv = np.full(shape=(period,), fill_value=np.nan)
-    for i in np.arange(period):
-        monv[i] = np.mean(x[i:n:period])
-    monv = monv - np.mean(monv)
-    for i in np.arange(period):
-        sv[i:n:period] = monv[i] * np.ones(shape=len(np.arange(i, n, period)))
-    return sv
+
+# PORTMANTEAULB hypothesis test (H0) for independence of time series: tests jointly that several autocorrelations
+# are zero. It computes the Ljung-Box statistic of the modified sum of autocorrelations up to a maximum lag, for
+# maximum lags 1,2,...,maxtau.
+def portmanteau_test(xv, maxtau, show=False):
+
+    ljung_val, ljung_pval = acorr_ljungbox(xv, lags=maxtau)
+    if show:
+        fig, ax = plt.subplots(1, 1)
+        ax.scatter(np.arange(len(ljung_pval)), ljung_pval)
+        ax.axhline(0.05, linestyle='--', color='r')
+        ax.set_title('Ljung-Box Portmanteau test')
+        ax.set_yticks(np.arange(0, 1.1))
+        plt.show()
+    return ljung_val, ljung_pval
 
