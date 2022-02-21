@@ -120,15 +120,16 @@ def get_pacf(xv, lags=10, alpha=0.05, show=True):
 # maximum lags 1,2,...,maxtau.
 def portmanteau_test(xv, maxtau, show=False):
 
-    ljung_val, ljung_pval = acorr_ljungbox(xv, lags=maxtau)
+    df = acorr_ljungbox(xv, lags=maxtau)
+    lbpv = df.lb_pvalue.values
     if show:
         fig, ax = plt.subplots(1, 1)
-        ax.scatter(np.arange(len(ljung_pval)), ljung_pval)
+        ax.scatter(np.arange(len(lbpv)), lbpv)
         ax.axhline(0.05, linestyle='--', color='r')
         ax.set_title('Ljung-Box Portmanteau test')
         ax.set_yticks(np.arange(0, 1.1))
         plt.show()
-    return ljung_val, ljung_pval
+    return lbpv
 
 
 # Fit ARIMA(p, d, q) in xv returns: summary (table), fittedvalues, residuals, model, AIC.
@@ -143,13 +144,13 @@ def fit_arima_model(x, p, q, d=0, show=False):
         fig, ax = plt.subplots(1, 1, figsize=(14, 8))
         ax.plot(x, label='Original', color='blue')
         ax.plot(fittedvalues, label='FittedValues', color='red', linestyle='--', alpha=0.9)
-        ax.legend()
+        # ax.legend()
         ax.set_title(f'ARIMA({p}, {d}, {q})')
         fig, ax = plt.subplots(2, 1, figsize=(14, 8))
         ax[0].hist(resid, label='Residual')
         ax[1].scatter(np.arange(len(resid)), resid)
         plt.title('Residuals')
-        plt.legend()
+        # plt.legend()
     return summary, fittedvalues, resid, model, model.aic
 
 

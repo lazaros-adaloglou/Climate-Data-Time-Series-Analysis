@@ -255,7 +255,8 @@ best_aic_ar = -2649.3628420606137
 print(f'AR order:{best_p_ar}')
 print(f'Best AIC for AR:{best_aic_ar}')
 summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, d=0, show=True)
-nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
+# nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
+lf.portmanteau_test(resid, maxtau, show=True)
 
 # ARMA Model.
 # # Akaike Information Criterion (AIC) for choosing model order.
