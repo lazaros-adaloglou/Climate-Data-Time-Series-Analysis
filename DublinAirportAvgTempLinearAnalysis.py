@@ -1,7 +1,6 @@
 # Imports.
-import LinearAnalysisFunctions as lf
-from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+import LinearAnalysisFunctions as lf
 import matplotlib.pyplot as plt
 import pmdarima as pm
 import datetime as dt
@@ -184,18 +183,18 @@ mas = x - ma
 # for i in range(7, len(varis1), 9):
 #     print(varis1[i])
 fd = np.log(mas + abs(min(mas)) + 1)
+fd = fd - fd.mean()
 # plt.plot(fd, linestyle='--')
-# plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)'])
+# plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
 # title = 'Logarithms of Detrended Average Temperature Time Series'
 # plt.title(title, x=0.5, y=1.0)
 # plt.savefig(f'{savepath}/{title}.png')
 # plt.show()
 # plt.plot(fd)
-# plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)'])
+# plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
 # title = 'Logarithms of Detrended Time Series (Increased Resolution)'
 # plt.title(title, x=0.5, y=1.0)
 # plt.xlim(15000, 22000)
-# plt.ylim(0.8, 3.3)
 # plt.savefig(f'{savepath}/{title}.png')
 # plt.show()
 # split2 = np.array_split(fd, 80)
@@ -205,7 +204,7 @@ fd = np.log(mas + abs(min(mas)) + 1)
 # print("\nYearly Variance of Logarithms of Detrended Average Temperature Time Series:\n")
 # for i in range(7, len(varis2), 9):
 #     print(varis2[i])
-
+#
 # # Print Yearly Mean Average Temperature of Logs of detrended time series.
 # fd_year = []
 # years = 80
@@ -219,12 +218,12 @@ fd = np.log(mas + abs(min(mas)) + 1)
 # print("Yearly Mean of Logarithms of Detrended Average Temperature Time Series:\n")
 # for i in range(0, len(fd_year), 9):
 #     print(fd_year[i])
-#
+
 # # Remove Seasonality (There is no Seasonality).
 #
 # # Hypothesis test for white noise after Detrending with MA (92) and taking the logs.
 # # Autocorrelation.
-# maxtau = 3
+maxtau = 3
 # acvf = lf.get_acf(fd, lags=maxtau)
 # title = 'Autocorrelation for log(X_detrended)'
 # plt.title(title, x=0.5, y=1.0)
@@ -232,4 +231,32 @@ fd = np.log(mas + abs(min(mas)) + 1)
 # plt.show()
 #
 # Model Adaption and Forecasting Single Step and Multistep.
+# ARMA Model.
+# Partial Autocorrelation Criterion for choosing model order.
+lf.get_pacf(fd, lags=maxtau)
+
+# # Akaike Information Criterion (AIC) for choosing model order.
+# best_aic = np.inf
+# best_p = None
+# best_q = None
+# for p in np.arange(1, 6, dtype=np.int):
+#     for q in np.arange(0, 6, dtype=np.int):
+#         try:
+#             _, _, _, _, aic = lf.fit_arima_model(x=fd, p=p, q=q, d=0, show=False)
+#         except ValueError as err:
+#             print(f'p:{p} - q:{q} - err:{err}')
+#             continue
+#         print(f'p:{p} - q:{q} - aic:{aic}')
+#         if aic < best_aic:
+#             best_p = p
+#             best_q = q
+#             best_aic = aic
+best_p = 1
+best_q = 3
+best_aic = -23921.22282779733
+print(f'AR order:{best_p}')
+print(f'MA order:{best_q}')
+print(f'Best AIC:{best_aic}')
+summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p, q=best_q, d=0, show=True)
+nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
 
