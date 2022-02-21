@@ -223,7 +223,7 @@ fd = fd - fd.mean()
 #
 # # Hypothesis test for white noise after Detrending with MA (92) and taking the logs.
 # # Autocorrelation.
-maxtau = 3
+maxtau = 31
 # acvf = lf.get_acf(fd, lags=maxtau)
 # title = 'Autocorrelation for log(X_detrended)'
 # plt.title(title, x=0.5, y=1.0)
@@ -231,10 +231,33 @@ maxtau = 3
 # plt.show()
 #
 # Model Adaption and Forecasting Single Step and Multistep.
-# ARMA Model.
+# AR Model.
 # Partial Autocorrelation Criterion for choosing model order.
-lf.get_pacf(fd, lags=maxtau)
+fd = fd[15000:18000]
+pacvf = lf.get_pacf(fd, lags=maxtau)
+plt.show()
 
+# Akaike Information Criterion (AIC) for choosing model order.
+# best_aic_ar = np.inf
+# best_p_ar = None
+# for p in np.arange(1, 6, dtype=np.int):
+#     try:
+#         _, _, _, _, aic = lf.fit_arima_model(x=fd, p=p, q=0, d=0, show=False)
+#     except ValueError as err:
+#         print(f'p:{p} - err:{err}')
+#         continue
+#     print(f'p:{p} - aic:{aic}')
+#     if aic < best_aic_ar:
+#         best_p_ar = p
+#         best_aic_ar = aic
+best_p_ar = 3
+best_aic_ar = -2649.3628420606137
+print(f'AR order:{best_p_ar}')
+print(f'Best AIC for AR:{best_aic_ar}')
+summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, d=0, show=True)
+nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
+
+# ARMA Model.
 # # Akaike Information Criterion (AIC) for choosing model order.
 # best_aic = np.inf
 # best_p = None
@@ -251,12 +274,12 @@ lf.get_pacf(fd, lags=maxtau)
 #             best_p = p
 #             best_q = q
 #             best_aic = aic
-best_p = 1
-best_q = 3
-best_aic = -23921.22282779733
-print(f'AR order:{best_p}')
-print(f'MA order:{best_q}')
-print(f'Best AIC:{best_aic}')
-summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p, q=best_q, d=0, show=True)
-nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
+# best_p = 1
+# best_q = 3
+# best_aic = -23921.22282779733
+# print(f'AR order:{best_p}')
+# print(f'MA order:{best_q}')
+# print(f'Best AIC:{best_aic}')
+# summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p, q=best_q, d=0, show=True)
+# nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
 
