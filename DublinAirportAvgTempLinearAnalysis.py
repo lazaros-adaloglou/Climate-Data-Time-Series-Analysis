@@ -255,8 +255,34 @@ best_aic_ar = -2649.3628420606137
 print(f'AR order:{best_p_ar}')
 print(f'Best AIC for AR:{best_aic_ar}')
 summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, d=0, show=True)
-# nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
+nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
 lf.portmanteau_test(resid, maxtau, show=True)
+
+# # MA Model.
+# # Autocorrelation Criterion for choosing model order.
+# acvf = lf.get_acf(fd, lags=maxtau)
+# plt.show()
+#
+# Akaike Information Criterion (AIC) for choosing model order.
+# best_aic_ma = np.inf
+# best_q_ma = None
+# for q in np.arange(1, 6, dtype=np.int):
+#     try:
+#         _, _, _, _, aic = lf.fit_arima_model(x=fd, p=0, q=q, d=0, show=False)
+#     except ValueError as err:
+#         print(f'q:{q} - err:{err}')
+#         continue
+#     print(f'q:{q} - aic:{aic}')
+#     if aic < best_aic_ma:
+#         best_q_ma = q
+#         best_aic_q = aic
+# best_q_ma = 5
+# best_aic_ma = np.inf
+# print(f'MA order:{best_q_ma}')
+# print(f'Best AIC for MA:{best_aic_ma}')
+# summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=0, q=best_q_ma, d=0, show=True)
+# nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
+# lf.portmanteau_test(resid, maxtau, show=True)
 
 # ARMA Model.
 # # Akaike Information Criterion (AIC) for choosing model order.
@@ -283,4 +309,17 @@ lf.portmanteau_test(resid, maxtau, show=True)
 # print(f'Best AIC:{best_aic}')
 # summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p, q=best_q, d=0, show=True)
 # nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
+# lf.portmanteau_test(resid, maxtau, show=True)
+
+# FIT MODEL.
+prop = 0.7
+split_point = int(prop*fd.shape[0])
+train_fd, test_fd = fd[:split_point], fd[split_point:]
+_, _, _, model, _ = lf.fit_arima_model(x=train_fd, p=3, q=0, d=0, show=True)
+Tmax = 50
+forecast, sterror, confint = model.forecast(steps=Tmax)
+plt.plot(forecast, label='Forecast')
+plt.fill_between(np.arange(Tmax), confint[:, 0], confint[:, 1], alpha=0.3, color='c', label='Conf.Int')
+plt.plot(test_fd[:Tmax], linestyle='--', color='b', label='Original')
+plt.legend()
 
