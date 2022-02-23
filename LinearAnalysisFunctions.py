@@ -2,7 +2,7 @@
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.tsa.stattools import acf, pacf
 from statsmodels.tsa.arima.model import ARIMA
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from scipy.stats import norm
 import numpy as np
 
@@ -100,7 +100,7 @@ def get_pacf(xv, lags=10, alpha=0.05, show=True):
 # PORTMANTEAULB hypothesis test (H0) for independence of time series: tests jointly that several autocorrelations
 # are zero. It computes the Ljung-Box statistic of the modified sum of autocorrelations up to a maximum lag, for
 # maximum lags 1,2,...,maxtau.
-def portmanteau_test(xv, maxtau, p, d, q, show=False):
+def portmanteau_test(xv, maxtau, p, d, q, savepath, show=False):
     df = acorr_ljungbox(xv, lags=maxtau)
     lbpv = df.lb_pvalue.values
     if show:
@@ -109,10 +109,9 @@ def portmanteau_test(xv, maxtau, p, d, q, show=False):
         ax.axhline(0.05, linestyle='--', color='r')
         title = f'Ljung-Box Portmanteau Test for Residuals of ARIMA({p},{d},{q})'
         ax.set_title(title)
-        plt.savefig(f'{savepath}/{title}.png')
         ax.set_yticks(np.arange(0, 1.1))
+        plt.savefig(f'{savepath}/{title}.png')
         plt.show(block=False)
-        plt.pause(0.001)
     return lbpv
 
 
@@ -137,13 +136,12 @@ def fit_arima_model(x, p, q, d=0, show=False):
         title = f'ARIMA({p},{d},{q})'
         plt.savefig(f'Figures/{title}.png')
         plt.show(block=False)
-        plt.pause(0.001)
     return summary, fittedvalues, resid, model, model.aic
 
 
 # Calculate fitting error with NRMSE for given model in timeseries x till prediction horizon Tmax. Returns: nrmsev
 # preds: for timesteps T=1, 2, 3.
-def calculate_fitting_error(x, model, tmax=20, show=False):
+def calculate_fitting_error(x, model, p, d, q,  tmax=20, show=False):
     nrmsev = np.full(shape=tmax, fill_value=np.nan)
     nobs = len(x)
     xvstd = np.std(x)
@@ -171,25 +169,23 @@ def calculate_fitting_error(x, model, tmax=20, show=False):
         fig, ax = plt.subplots(1, 1, figsize=(14, 8))
         ax.plot(np.arange(1, tmax), nrmsev[1:], marker='x', label='NRMSE')
         ax.axhline(1, color='red', linestyle='--')
-        p = len(model.arparams) - 2
-        q = len(model.maparams) - 2
-        d = 0
         title = f'Fitting Error of ARIMA({p},{d},{q}) for T = {tmax}'
         ax.set_title(title)
         ax.legend()
         ax.set_xlabel('T')
         ax.set_xticks(np.arange(1, tmax))
-        plt.show()
-        # Plot multistep prediction for T=1, 2, 3
-        fig, ax = plt.subplots(1, 1, figsize=(14, 8))
-        ax.plot(x, label='original')
-        colors = ['red', 'green', 'black']
-        for i, preds in enumerate(predm[:3]):
-            ax.plot(preds, color=colors[i], linestyle='--', label=f'T={i + 1}', alpha=0.7)
-        ax.legend(loc='best')
         plt.savefig(f'Figures/{title}.png')
         plt.show(block=False)
-        plt.pause(0.001)
+        # # Plot multistep prediction for T=1, 2, 3
+        # fig, ax = plt.subplots(1, 1, figsize=(14, 8))
+        # title = f'Prediction of ARIMA({p},{d},{q}) for T = 1, 2, 3'
+        # ax.plot(x, label='original')
+        # colors = ['red', 'green', 'black']
+        # for i, preds in enumerate(predm[:3]):
+        #     ax.plot(preds, color=colors[i], linestyle='--', label=f'T={i + 1}', alpha=0.7)
+        # ax.legend(loc='best')
+        # plt.savefig(f'Figures/{title}.png')
+        # plt.show(block=False)
     return nrmsev, predm
 
 

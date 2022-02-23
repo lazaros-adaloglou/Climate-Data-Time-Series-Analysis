@@ -1,7 +1,7 @@
 # Imports.
 from statsmodels.graphics.tsaplots import plot_acf
 import LinearAnalysisFunctions as lf
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 import pmdarima as pm
 import pandas as pd
 import numpy as np
@@ -33,19 +33,16 @@ x_df = pd.DataFrame({data.AvgTemp.name: x})
 m = len(x_df)
 
 # Plot Average Temperature.
-lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', 'Figures/', date_axis)
+lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', savepath, date_axis)
 plt.show(block=False)
-plt.pause(0.001)
 
 # Average Temperature Histogram.
-lf.plot_histogram(x, 'AvgTemp (°C)', 'Average Temperature Histogram', 'Figures/')
+lf.plot_histogram(x, 'AvgTemp (°C)', 'Average Temperature Histogram', savepath)
 plt.show(block=False)
-plt.pause(0.001)
 
 # Plot Zoomed Average Temperature.
-lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature (1998-2014)', 'Figures/', date_axis, zoomx=True)
+lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature (1998-2014)', savepath, date_axis, zoomx=True)
 plt.show(block=False)
-plt.pause(0.001)
 
 # Plot Yearly Mean of Original Time Series.
 x_year = []
@@ -65,7 +62,6 @@ title = 'Yearly Mean of Original Time Series'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Average Temperature Autocorrelation of Original Time Series.
 plot_acf(x, zero=False)
@@ -74,7 +70,6 @@ plt.title(title, x=0.5, y=1.0)
 plt.xlabel('lag(tau)')
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Remove Trend.
 # Polynomial Fit.
@@ -101,7 +96,6 @@ plt.ylabel('AvgTemp (°C)')
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Plot Polynomial and Linear Breakpoint Detrends.
 plt.figure()
@@ -115,7 +109,6 @@ plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 18000)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Moving Average Filter.
 window = 92
@@ -131,7 +124,6 @@ plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 18000)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Differences of Logarithms (Increment each zero with 0.1).
 logx = []
@@ -158,7 +150,6 @@ plt.ylabel('AvgTemp (°C)')
 plt.legend([f'MA ({window}) Detrended', 'Differences of Logarithms Detrended'])
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Print Yearly Mean Average Temperature of detrended and not time series.
 mas = x - ma
@@ -192,7 +183,6 @@ title = 'Yearly Variance of of Original Time Series'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Print Yearly Variance of Original, Detrended and Log of Detrended Average Temperature.
 split1 = np.array_split(mas, 80)
@@ -208,7 +198,6 @@ for i in range(7, len(varis1), 9):
     print(varis1[i])
 fd = np.log(mas + abs(min(mas)) + 1)
 fd = fd - fd.mean()
-# fd = fd[15000:18000]
 plt.figure()
 plt.plot(fd, linestyle='--')
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
@@ -217,7 +206,6 @@ plt.xlabel('Time (Days)')
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 plt.figure()
 plt.plot(fd)
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
@@ -227,7 +215,6 @@ plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 22000)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 split2 = np.array_split(fd, 80)
 varis2 = []
 for i in range(0, len(split2)):
@@ -254,19 +241,19 @@ for i in range(0, len(fd_year), 9):
 
 # Hypothesis test for white noise after Detrending with MA (92) and taking the logs.
 # Autocorrelation.
+fd = fd[15000:16000]
 maxtau = 31
 acvf = lf.get_acf(fd, lags=maxtau)
-title = 'Autocorrelation for log(X_detrended)'
+title = 'Autocorrelation of log(X_detrended)'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-plt.pause(0.001)
 
 # Model Adaption and Forecasting Single Step and Multistep.
 # AR Model.
 # Partial Autocorrelation Criterion for choosing model order.
 pacvf = lf.get_pacf(fd, lags=maxtau)
-title = 'Partial Autocorrelation for log(X_detrended)'
+title = 'Partial Autocorrelation of log(X_detrended)'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
@@ -277,7 +264,7 @@ print("=========================================================================
 print("Exploring an AR Model for the Time Series:")
 best_aic_ar = np.inf
 best_p_ar = None
-for p in np.arange(1, 10, dtype=np.int):
+for p in np.arange(1, 10):
     try:
         _, _, _, _, aic = lf.fit_arima_model(x=fd, p=p, q=0, d=0, show=False)
     except ValueError as err:
@@ -294,22 +281,21 @@ for p in np.arange(1, 10, dtype=np.int):
 # best_p_ar = 3
 # best_aic_ar = -2649.3628420606137
 summary_ar, fittedvalues_ar, resid_ar, model_ar, aic_ar = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, d=0, show=True)
+plt.pause(0.001)
 print("===============================================================================================================")
 print("Summary of chosen AR Model:\n")
 print(summary_ar)
-nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, tmax=10, show=True)
+nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, best_p_ar, 0, 0, tmax=10, show=True)
+plt.pause(0.001)
 
 # Out of sample predictions for time horizon Tmax.
 # Split Time Series in train and test set. Test set is the last year (365 days).
-prop = 1-365/m
-print(prop)
-split_point = int(prop*fd.shape[0])
-train_fd, test_fd = fd[:split_point], fd[split_point:]
+train_fd, test_fd = fd[:len(fd)-365], fd[len(fd)-365:]
 model_ar_train = pm.ARIMA(order=(best_p_ar, 0, 0))
 model_ar_train.fit(train_fd)
 return_conf_int = True
 alpha = 0.05
-Tmax = 70
+Tmax = round(len(test_fd)/10)
 preds_ar_train, conf_bounds_ar_train = \
     lf.predict_oos_multistep(model_ar_train, tmax=Tmax, return_conf_int=return_conf_int, alpha=alpha, show=False)
 plt.figure()
@@ -348,7 +334,7 @@ plt.show(block=False)
 plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
-lf.portmanteau_test(resid_ar, best_p_ar, 0, 0, maxtau, show=True)
+lf.portmanteau_test(resid_ar, maxtau, best_p_ar, 0, 0, savepath, show=True)
 
 # MA Model.
 # Autocorrelation Criterion for choosing model order.
@@ -357,7 +343,7 @@ print("=========================================================================
 print("Exploring an MA Model for the Time Series:")
 best_aic_ma = np.inf
 best_q_ma = None
-for q in np.arange(1, 10, dtype=np.int):
+for q in np.arange(1, 10):
     try:
         _, _, _, _, aic = lf.fit_arima_model(x=fd, p=0, q=q, d=0, show=False)
     except ValueError as err:
@@ -374,10 +360,12 @@ for q in np.arange(1, 10, dtype=np.int):
 # best_q_ma = 8
 # best_aic_ma = -2640.548
 summary_ma, fittedvalues_ma, resid_ma, model_ma, aic_ma = lf.fit_arima_model(x=fd, p=0, q=best_q_ma, d=0, show=True)
+plt.pause(0.001)
 print("===============================================================================================================")
 print("Summary of chosen MA Model:\n")
 print(summary_ma)
-nrmseV_ma, predM_ma = lf.calculate_fitting_error(fd, model_ma, tmax=10, show=True)
+nrmseV_ma, predM_ma = lf.calculate_fitting_error(fd, model_ma, 0, 0, best_q_ma, tmax=10, show=True)
+plt.pause(0.001)
 
 # Out of sample predictions for time horizon Tmax.
 model_ma_train = pm.ARIMA(order=(0, 0, best_q_ma))
@@ -420,7 +408,7 @@ plt.show(block=False)
 plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
-lf.portmanteau_test(resid_ma, 0, 0, best_q_ma, maxtau, show=True)
+lf.portmanteau_test(resid_ma, maxtau, 0, 0, best_q_ma, savepath, show=True)
 
 # ARMA Model.
 # Autocorrelation Criterion for choosing model order.
@@ -430,8 +418,8 @@ print("Exploring an ARMA Model for the Time Series:")
 best_aic_arma = np.inf
 best_p_arma = None
 best_q_arma = None
-for p in np.arange(1, 10, dtype=np.int):
-    for q in np.arange(0, 10, dtype=np.int):
+for p in np.arange(1, 4):
+    for q in np.arange(1, 4):
         try:
             _, _, _, _, aic = lf.fit_arima_model(x=fd, p=p, q=q, d=0, show=False)
         except ValueError as err:
@@ -451,10 +439,12 @@ for p in np.arange(1, 10, dtype=np.int):
 # best_aic_arma = np.inf
 summary_arma, fittedvalues_arma, resid_arma, model_arma, aic_arma = \
     lf.fit_arima_model(x=fd, p=best_p_arma, q=best_q_arma, d=0, show=True)
+plt.pause(0.001)
 print("===============================================================================================================")
 print("Summary of chosen ARMA Model:\n")
 print(summary_arma)
-nrmseV_arma, predM_arma = lf.calculate_fitting_error(fd, model_arma, tmax=10, show=True)
+nrmseV_arma, predM_arma = lf.calculate_fitting_error(fd, model_arma, best_p_arma, 0, best_q_arma, tmax=10, show=True)
+plt.pause(0.001)
 
 # Out of sample predictions for time horizon Tmax.
 model_arma_train = pm.ARIMA(order=(best_p_arma, 0, best_q_arma))
@@ -497,4 +487,4 @@ plt.show(block=False)
 plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
-lf.portmanteau_test(resid_arma, best_p_arma, 0, best_q_arma, maxtau, show=True)
+lf.portmanteau_test(resid_arma, maxtau, best_p_arma, 0, best_q_arma, savepath, show=True)
