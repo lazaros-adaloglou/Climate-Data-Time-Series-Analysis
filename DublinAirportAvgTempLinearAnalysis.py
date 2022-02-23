@@ -21,7 +21,7 @@ try:
 except FileNotFoundError:
     os.system('python DublinAirportDataPreprocessing.py')
     data = pd.read_csv(filename, delimiter=',', parse_dates=['date'])
-print("---------------------------------------------------------------------------------------------------------------")
+print("===============================================================================================================")
 print("Average Temperature Time Series:\n")
 savepath = 'data/'
 data = data.drop("Unnamed: 0", axis=1)
@@ -148,7 +148,7 @@ mas = x - ma
 #     for day in range(1, days + 1):
 #         k = k + mas[year * days + day]
 #     mas_year.append(k/days)
-# print("---------------------------------------------------------------------------------------------------------------")
+# print("===============================================================================================================")
 # print("Yearly Mean of Average Temperature Time Series:\n")
 # for i in range(0, len(x_year), 9):
 #     print(x_year[i])
@@ -175,7 +175,7 @@ mas = x - ma
 # varis1 = []
 # for i in range(0, len(split1)):
 #     varis1.append(statistics.variance(split1[i]))
-# print("---------------------------------------------------------------------------------------------------------------")
+# print("===============================================================================================================")
 # print("Yearly Variance of Average Temperature Time Series:\n")
 # for i in range(7, len(varis), 9):
 #     print(varis[i])
@@ -214,7 +214,7 @@ fd = fd - fd.mean()
 #     for day in range(1, days + 1):
 #         k = k + fd[year * days + day]
 #     fd_year.append(k/days)
-# print("---------------------------------------------------------------------------------------------------------------")
+# print("===============================================================================================================")
 # print("Yearly Mean of Logarithms of Detrended Average Temperature Time Series:\n")
 # for i in range(0, len(fd_year), 9):
 #     print(fd_year[i])
@@ -234,39 +234,78 @@ maxtau = 31
 # AR Model.
 # Partial Autocorrelation Criterion for choosing model order.
 fd = fd[15000:18000]
-pacvf = lf.get_pacf(fd, lags=maxtau)
-plt.show()
+# pacvf = lf.get_pacf(fd, lags=maxtau)
+# plt.show()
 
 # Akaike Information Criterion (AIC) for choosing model order.
+print("===============================================================================================================")
+print("Exploring an AR Model for the Time Series:")
 # best_aic_ar = np.inf
 # best_p_ar = None
-# for p in np.arange(1, 6, dtype=np.int):
+# for p in np.arange(1, 10, dtype=np.int):
 #     try:
 #         _, _, _, _, aic = lf.fit_arima_model(x=fd, p=p, q=0, d=0, show=False)
 #     except ValueError as err:
-#         print(f'p:{p} - err:{err}')
+#         print("--------------------------------------------------------------------------------------------------------"
+#               "-------")
+#         print(f'AR({p}) Error ---> {err}')
 #         continue
-#     print(f'p:{p} - aic:{aic}')
+#     print("------------------------------------------------------------------------------------------------------------"
+#           "---")
+#     print(f'AR({p}) AIC ---> {aic}')
 #     if aic < best_aic_ar:
 #         best_p_ar = p
 #         best_aic_ar = aic
 best_p_ar = 3
-best_aic_ar = -2649.3628420606137
-print(f'AR order:{best_p_ar}')
-print(f'Best AIC for AR:{best_aic_ar}')
-summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, d=0, show=True)
-nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
-lf.portmanteau_test(resid, maxtau, show=True)
+# best_aic_ar = -2649.3628420606137
+# summary_ar, fittedvalues_ar, resid_ar, model_ar, aic_ar = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, d=0, show=True)
+# print("===============================================================================================================")
+# print("Summary of chosen AR Model:\n")
+# print(summary_ar)
+# nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, tmax=10, show=True)
+# lf.portmanteau_test(resid_ar, maxtau, show=True)
+#
+# # Out of sample predictions.
+prop = 0.7
+split_point = int(prop*fd.shape[0])
+train_fd, test_fd = fd[:split_point], fd[split_point:]
+summary_ar_train, fittedvalues_ar_train, resid_ar_train, model_ar_train, aic_ar_train \
+    = lf.fit_arima_model(x=train_fd, p=best_p_ar, q=0, d=0, show=True)
+Tmax = 70
+alpha = 0.05
+preds_ar_train, conf_bounds_ar_train = lf.predict_oos_multistep(model_ar_train, tmax=Tmax,
+                                                                return_conf_int=True, alpha=alpha, show=False)
+plt.figure()
+plt.plot(np.arange(1, Tmax+1), preds_ar_train, label='predictions')
+plt.plot(np.arange(1, Tmax+1), test_fd[:Tmax], label='original')
+plt.fill_between(np.arange(1, Tmax+1), conf_bounds_ar_train[:, 0], conf_bounds_ar_train[:, 1], color='green', alpha=0.3)
+plt.legend()
+plt.show()
+#
+# # Rolling oos prediction.
+# preds = []
+# bounds = []
+# return_conf_int = True
+# alpha = 0.05
+# for i in test_xV:
+#     prediction, conf_bounds = model.predict(n_periods=1, return_conf_int=return_conf_int, alpha=alpha)
+#     model.update(i)
+#     preds.append(prediction[0])
+#     bounds.append(conf_bounds[0])
+# plt.figure()
+# plt.plot(preds, label='predictions', linestyle='--', alpha=0.3)
+# plt.plot(test_xV, label='original', alpha=0.7)
+# if return_conf_int:
+#     bounds = np.array(bounds)
+#     plt.fill_between(np.arange(len(test_xV)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
+# plt.legend()
 
 # # MA Model.
 # # Autocorrelation Criterion for choosing model order.
-# acvf = lf.get_acf(fd, lags=maxtau)
-# plt.show()
-#
 # Akaike Information Criterion (AIC) for choosing model order.
 # best_aic_ma = np.inf
 # best_q_ma = None
-# for q in np.arange(1, 6, dtype=np.int):
+# for q in np.arange(1, 10, dtype=np.int):
 #     try:
 #         _, _, _, _, aic = lf.fit_arima_model(x=fd, p=0, q=q, d=0, show=False)
 #     except ValueError as err:
@@ -289,8 +328,8 @@ lf.portmanteau_test(resid, maxtau, show=True)
 # best_aic = np.inf
 # best_p = None
 # best_q = None
-# for p in np.arange(1, 6, dtype=np.int):
-#     for q in np.arange(0, 6, dtype=np.int):
+# for p in np.arange(1, 10, dtype=np.int):
+#     for q in np.arange(0, 10, dtype=np.int):
 #         try:
 #             _, _, _, _, aic = lf.fit_arima_model(x=fd, p=p, q=q, d=0, show=False)
 #         except ValueError as err:
@@ -310,16 +349,3 @@ lf.portmanteau_test(resid, maxtau, show=True)
 # summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p, q=best_q, d=0, show=True)
 # nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
 # lf.portmanteau_test(resid, maxtau, show=True)
-
-# FIT MODEL.
-prop = 0.7
-split_point = int(prop*fd.shape[0])
-train_fd, test_fd = fd[:split_point], fd[split_point:]
-_, _, _, model, _ = lf.fit_arima_model(x=train_fd, p=3, q=0, d=0, show=True)
-Tmax = 50
-forecast, sterror, confint = model.forecast(steps=Tmax)
-plt.plot(forecast, label='Forecast')
-plt.fill_between(np.arange(Tmax), confint[:, 0], confint[:, 1], alpha=0.3, color='c', label='Conf.Int')
-plt.plot(test_fd[:Tmax], linestyle='--', color='b', label='Original')
-plt.legend()
-
