@@ -33,21 +33,21 @@ x_df = pd.DataFrame({data.AvgTemp.name: x})
 m = len(x_df)
 
 # Plot Average Temperature.
-lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', 'data/', date_axis)
+lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', 'Figures/', date_axis)
 plt.show(block=False)
 plt.pause(0.001)
 
 # Average Temperature Histogram.
-lf.plot_histogram(x, 'AvgTemp (°C)', 'Average Temperature Histogram', 'data/')
+lf.plot_histogram(x, 'AvgTemp (°C)', 'Average Temperature Histogram', 'Figures/')
 plt.show(block=False)
 plt.pause(0.001)
 
 # Plot Zoomed Average Temperature.
-lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature (1998-2014)', 'data/', date_axis, zoomx=True)
+lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature (1998-2014)', 'Figures/', date_axis, zoomx=True)
 plt.show(block=False)
 plt.pause(0.001)
 
-# Plot Yearly Mean Average Temperature.
+# Plot Yearly Mean of Original Time Series.
 x_year = []
 years = 80
 days = 365
@@ -61,17 +61,17 @@ plt.figure()
 plt.plot(dates_year, x_year, color='red', marker='x', linestyle='--', linewidth=1)
 plt.xlabel('Time (Years)')
 plt.ylabel('AvgTemp (°C)')
-title = 'Yearly Mean Average Temperature'
+title = 'Yearly Mean of Original Time Series'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
-# Average Temperature Autocorrelation.
-plt.figure()
+# Average Temperature Autocorrelation of Original Time Series.
 plot_acf(x, zero=False)
-title = 'Autocorrelation'
+title = 'Autocorrelation of Original Time Series'
 plt.title(title, x=0.5, y=1.0)
+plt.xlabel('lag(tau)')
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
@@ -96,6 +96,8 @@ plt.plot(x, alpha=0.5)
 plt.xlim(15000, 18000)
 plt.legend([f'Polynomial ({p})', f'Breakpoint ({breakpoints})', 'Original'])
 title = f'Polynomial ({p}) and Breakpoint Fit ({breakpoints})'
+plt.xlabel('Time (Days)')
+plt.ylabel('AvgTemp (°C)')
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
@@ -107,6 +109,8 @@ plt.plot(x-pol, alpha=0.5)
 plt.plot(x[0:28800]-pol1, alpha=0.5)
 plt.legend([f'Polynomial ({p}) Detrended', f'Breakpoint ({breakpoints}) Detrended'])
 title = f'Polynomial ({p}) vs Breakpoint ({breakpoints}) Detrended'
+plt.xlabel('Time (Days)')
+plt.ylabel('AvgTemp (°C)')
 plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 18000)
 plt.savefig(f'{savepath}/{title}.png')
@@ -121,6 +125,8 @@ plt.plot(ma, linestyle='--')
 plt.plot(x, alpha=0.5)
 plt.legend([f'MA ({window})', 'Original'])
 title = f'Moving Average ({window})'
+plt.xlabel('Time (Days)')
+plt.ylabel('AvgTemp (°C)')
 plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 18000)
 plt.savefig(f'{savepath}/{title}.png')
@@ -147,6 +153,8 @@ plt.plot(fd, alpha=0.5)
 plt.xlim(15000, 16000)
 title = f'Differences of Logarithms vs MA ({window})'
 plt.title(title, x=0.5, y=1.0)
+plt.xlabel('Time (Days)')
+plt.ylabel('AvgTemp (°C)')
 plt.legend([f'MA ({window}) Detrended', 'Differences of Logarithms Detrended'])
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
@@ -180,7 +188,7 @@ plt.figure()
 plt.plot(dates_year, varis, color='red', marker='x', linestyle='--', linewidth=1)
 plt.xlabel('Time (Years)')
 plt.ylabel('AvgTemp (°C)')
-title = 'Yearly Variance of Average Temperature'
+title = 'Yearly Variance of of Original Time Series'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
@@ -205,6 +213,7 @@ plt.figure()
 plt.plot(fd, linestyle='--')
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
 title = 'Logarithms of Detrended Average Temperature Time Series'
+plt.xlabel('Time (Days)')
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
@@ -213,6 +222,7 @@ plt.figure()
 plt.plot(fd)
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
 title = 'Logarithms of Detrended Time Series (Increased Resolution)'
+plt.xlabel('Time (Days)')
 plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 22000)
 plt.savefig(f'{savepath}/{title}.png')
@@ -256,6 +266,9 @@ plt.pause(0.001)
 # AR Model.
 # Partial Autocorrelation Criterion for choosing model order.
 pacvf = lf.get_pacf(fd, lags=maxtau)
+title = 'Partial Autocorrelation for log(X_detrended)'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
@@ -289,6 +302,7 @@ nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, tmax=10, show=Tru
 # Out of sample predictions for time horizon Tmax.
 # Split Time Series in train and test set. Test set is the last year (365 days).
 prop = 1-365/m
+print(prop)
 split_point = int(prop*fd.shape[0])
 train_fd, test_fd = fd[:split_point], fd[split_point:]
 model_ar_train = pm.ARIMA(order=(best_p_ar, 0, 0))
@@ -305,7 +319,9 @@ if return_conf_int:
     plt.fill_between(np.arange(1, Tmax+1), conf_bounds_ar_train[:, 0],
                      conf_bounds_ar_train[:, 1], color='green', alpha=0.3)
 plt.legend()
-plt.title(f'AR({best_p_ar}) oos predictions with horizon T={Tmax}')
+title = f'AR({best_p_ar}) Out of Sample Predictions for Horizon T = {Tmax}'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
@@ -325,12 +341,14 @@ if return_conf_int:
     bounds = np.array(bounds)
     plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
 plt.legend()
-plt.title(f'AR({best_p_ar}) {Tmax} rolling oos predictions')
+title = f'AR({best_p_ar}) Rolling Out of Sample Predictions'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
-lf.portmanteau_test(resid_ar, maxtau, show=True)
+lf.portmanteau_test(resid_ar, best_p_ar, 0, 0, maxtau, show=True)
 
 # MA Model.
 # Autocorrelation Criterion for choosing model order.
@@ -373,7 +391,9 @@ if return_conf_int:
     plt.fill_between(np.arange(1, Tmax+1), conf_bounds_ma_train[:, 0],
                      conf_bounds_ma_train[:, 1], color='green', alpha=0.3)
 plt.legend()
-plt.title(f'MA({best_q_ma}) oos predictions with horizon T={Tmax}')
+title = f'MA({best_q_ma}) Out of Sample Predictions for Horizon T = {Tmax}'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
@@ -393,12 +413,14 @@ if return_conf_int:
     bounds = np.array(bounds)
     plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
 plt.legend()
-plt.title(f'MA({best_q_ma}) {Tmax} rolling oos predictions')
+title = f'MA({best_q_ma}) Rolling Out of Sample Predictions'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
-lf.portmanteau_test(resid_ma, maxtau, show=True)
+lf.portmanteau_test(resid_ma, 0, 0, best_q_ma, maxtau, show=True)
 
 # ARMA Model.
 # Autocorrelation Criterion for choosing model order.
@@ -446,7 +468,9 @@ if return_conf_int:
     plt.fill_between(np.arange(1, Tmax+1), conf_bounds_arma_train[:, 0],
                      conf_bounds_arma_train[:, 1], color='green', alpha=0.3)
 plt.legend()
-plt.title(f'ARMA({best_p_arma},{best_q_arma}) oos predictions with horizon T={Tmax}')
+title = f'ARMA({best_p_arma},{best_q_arma}) Out of Sample Predictions for Horizon T = {Tmax}'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
@@ -466,9 +490,11 @@ if return_conf_int:
     bounds = np.array(bounds)
     plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
 plt.legend()
-plt.title(f'ARMA({best_p_arma},{best_q_arma}) {Tmax} rolling oos predictions')
+title = f'ARMA({best_p_arma},{best_q_arma}) Rolling Out of Sample Predictions'
+plt.title(title, x=0.5, y=1.0)
+plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
 plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
-lf.portmanteau_test(resid_ma, maxtau, show=True)
+lf.portmanteau_test(resid_arma, best_p_arma, 0, best_q_arma, maxtau, show=True)

@@ -100,14 +100,16 @@ def get_pacf(xv, lags=10, alpha=0.05, show=True):
 # PORTMANTEAULB hypothesis test (H0) for independence of time series: tests jointly that several autocorrelations
 # are zero. It computes the Ljung-Box statistic of the modified sum of autocorrelations up to a maximum lag, for
 # maximum lags 1,2,...,maxtau.
-def portmanteau_test(xv, maxtau, show=False):
+def portmanteau_test(xv, maxtau, p, d, q, show=False):
     df = acorr_ljungbox(xv, lags=maxtau)
     lbpv = df.lb_pvalue.values
     if show:
         fig, ax = plt.subplots(1, 1)
         ax.scatter(np.arange(len(lbpv)), lbpv)
         ax.axhline(0.05, linestyle='--', color='r')
-        ax.set_title('Ljung-Box Portmanteau test')
+        title = f'Ljung-Box Portmanteau Test for Residuals of ARIMA({p},{d},{q})'
+        ax.set_title(title)
+        plt.savefig(f'{savepath}/{title}.png')
         ax.set_yticks(np.arange(0, 1.1))
         plt.show(block=False)
         plt.pause(0.001)
@@ -132,6 +134,8 @@ def fit_arima_model(x, p, q, d=0, show=False):
         ax3.hist(resid)
         ax3.set_ylabel('Frequency')
         ax3.set_xlabel('Residuals Histogram')
+        title = f'ARIMA({p},{d},{q})'
+        plt.savefig(f'Figures/{title}.png')
         plt.show(block=False)
         plt.pause(0.001)
     return summary, fittedvalues, resid, model, model.aic
@@ -167,7 +171,11 @@ def calculate_fitting_error(x, model, tmax=20, show=False):
         fig, ax = plt.subplots(1, 1, figsize=(14, 8))
         ax.plot(np.arange(1, tmax), nrmsev[1:], marker='x', label='NRMSE')
         ax.axhline(1, color='red', linestyle='--')
-        ax.set_title('Fitting Error')
+        p = len(model.arparams) - 2
+        q = len(model.maparams) - 2
+        d = 0
+        title = f'Fitting Error of ARIMA({p},{d},{q}) for T = {tmax}'
+        ax.set_title(title)
         ax.legend()
         ax.set_xlabel('T')
         ax.set_xticks(np.arange(1, tmax))
@@ -179,6 +187,7 @@ def calculate_fitting_error(x, model, tmax=20, show=False):
         for i, preds in enumerate(predm[:3]):
             ax.plot(preds, color=colors[i], linestyle='--', label=f'T={i + 1}', alpha=0.7)
         ax.legend(loc='best')
+        plt.savefig(f'Figures/{title}.png')
         plt.show(block=False)
         plt.pause(0.001)
     return nrmsev, predm
