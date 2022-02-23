@@ -201,5 +201,5 @@ def predict_oos_multistep(model, tmax=10, return_conf_int=True, alpha=0.05, show
         conf_bounds = []
     if show:
         fig, ax = plt.subplots(1, 1)
-        ax.plot(np.arange(1, tmax + 1), preds)
+        ax.plot(np.arange(1, tmax+1), preds)
     return preds, conf_bounds

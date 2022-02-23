@@ -263,65 +263,115 @@ best_p_ar = 3
 # print("Summary of chosen AR Model:\n")
 # print(summary_ar)
 # nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, tmax=10, show=True)
-# lf.portmanteau_test(resid_ar, maxtau, show=True)
-#
-# # Out of sample predictions.
+
+# Out of sample predictions for time horizon Tmax.
 prop = 0.7
 split_point = int(prop*fd.shape[0])
 train_fd, test_fd = fd[:split_point], fd[split_point:]
-summary_ar_train, fittedvalues_ar_train, resid_ar_train, model_ar_train, aic_ar_train \
-    = lf.fit_arima_model(x=train_fd, p=best_p_ar, q=0, d=0, show=True)
-Tmax = 70
+model_ar_train = pm.ARIMA(order=(best_p_ar, 0, 0))
+model_ar_train.fit(train_fd)
+return_conf_int = True
 alpha = 0.05
-preds_ar_train, conf_bounds_ar_train = lf.predict_oos_multistep(model_ar_train, tmax=Tmax,
-                                                                return_conf_int=True, alpha=alpha, show=False)
+Tmax = 70
+preds_ar_train, conf_bounds_ar_train = \
+    lf.predict_oos_multistep(model_ar_train, tmax=Tmax, return_conf_int=return_conf_int, alpha=alpha, show=False)
 plt.figure()
 plt.plot(np.arange(1, Tmax+1), preds_ar_train, label='predictions')
 plt.plot(np.arange(1, Tmax+1), test_fd[:Tmax], label='original')
-plt.fill_between(np.arange(1, Tmax+1), conf_bounds_ar_train[:, 0], conf_bounds_ar_train[:, 1], color='green', alpha=0.3)
+if return_conf_int:
+    plt.fill_between(np.arange(1, Tmax+1), conf_bounds_ar_train[:, 0],
+                     conf_bounds_ar_train[:, 1], color='green', alpha=0.3)
 plt.legend()
+plt.title(f'AR({best_p_ar}) oos predictions with horizon T={Tmax}')
 plt.show()
-#
-# # Rolling oos prediction.
-# preds = []
-# bounds = []
-# return_conf_int = True
-# alpha = 0.05
-# for i in test_xV:
-#     prediction, conf_bounds = model.predict(n_periods=1, return_conf_int=return_conf_int, alpha=alpha)
-#     model.update(i)
-#     preds.append(prediction[0])
-#     bounds.append(conf_bounds[0])
-# plt.figure()
-# plt.plot(preds, label='predictions', linestyle='--', alpha=0.3)
-# plt.plot(test_xV, label='original', alpha=0.7)
-# if return_conf_int:
-#     bounds = np.array(bounds)
-#     plt.fill_between(np.arange(len(test_xV)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
-# plt.legend()
 
-# # MA Model.
-# # Autocorrelation Criterion for choosing model order.
+# Rolling oos prediction.
+preds = []
+bounds = []
+for i in test_fd:
+    preds_ar_train_roll, conf_bounds_ar_train_roll = \
+        model_ar_train.predict(n_periods=1, return_conf_int=return_conf_int, alpha=alpha)
+    model_ar_train.update(i)
+    preds.append(preds_ar_train_roll[0])
+    bounds.append(conf_bounds_ar_train_roll[0])
+plt.figure()
+plt.plot(preds, label='predictions', linestyle='--', alpha=0.3)
+plt.plot(test_fd, label='original', alpha=0.7)
+if return_conf_int:
+    bounds = np.array(bounds)
+    plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
+plt.legend()
+plt.title(f'AR({best_p_ar}) {Tmax} rolling oos predictions')
+plt.show()
+
+# # Portmanteau Test to see if the residuals are white noise.
+# lf.portmanteau_test(resid_ar, maxtau, show=True)
+
+# MA Model.
+# Autocorrelation Criterion for choosing model order.
 # Akaike Information Criterion (AIC) for choosing model order.
-# best_aic_ma = np.inf
-# best_q_ma = None
-# for q in np.arange(1, 10, dtype=np.int):
-#     try:
-#         _, _, _, _, aic = lf.fit_arima_model(x=fd, p=0, q=q, d=0, show=False)
-#     except ValueError as err:
-#         print(f'q:{q} - err:{err}')
-#         continue
-#     print(f'q:{q} - aic:{aic}')
-#     if aic < best_aic_ma:
-#         best_q_ma = q
-#         best_aic_q = aic
-# best_q_ma = 5
-# best_aic_ma = np.inf
-# print(f'MA order:{best_q_ma}')
-# print(f'Best AIC for MA:{best_aic_ma}')
-# summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=0, q=best_q_ma, d=0, show=True)
-# nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
-# lf.portmanteau_test(resid, maxtau, show=True)
+print("===============================================================================================================")
+print("Exploring an MA Model for the Time Series:")
+best_aic_ma = np.inf
+best_q_ma = None
+for q in np.arange(1, 10, dtype=np.int):
+    try:
+        _, _, _, _, aic = lf.fit_arima_model(x=fd, p=0, q=q, d=0, show=False)
+    except ValueError as err:
+        print("--------------------------------------------------------------------------------------------------------"
+              "-------")
+        print(f'MA({q}) Error ---> {err}')
+        continue
+    print("------------------------------------------------------------------------------------------------------------"
+          "---")
+    print(f'MA({q}) AIC ---> {aic}')
+    if aic < best_aic_ma:
+        best_q_ma = q
+        best_aic_ma = aic
+best_q_ma = 5
+best_aic_ma = np.inf
+summary_ma, fittedvalues_ma, resid_ma, model_ma, aic_ma = lf.fit_arima_model(x=fd, p=0, q=best_q_ma, d=0, show=True)
+print("===============================================================================================================")
+print("Summary of chosen MA Model:\n")
+print(summary_ma)
+nrmseV_ma, predM_ma = lf.calculate_fitting_error(fd, model_ma, tmax=10, show=True)
+
+# Out of sample predictions for time horizon Tmax.
+model_ma_train = pm.ARIMA(order=(0, best_q_ma, 0))
+model_ma_train.fit(train_fd)
+preds_ma_train, conf_bounds_ma_train = \
+    lf.predict_oos_multistep(model_ma_train, tmax=Tmax, return_conf_int=return_conf_int, alpha=alpha, show=False)
+plt.figure()
+plt.plot(np.arange(1, Tmax+1), preds_ma_train, label='predictions')
+plt.plot(np.arange(1, Tmax+1), test_fd[:Tmax], label='original')
+if return_conf_int:
+    plt.fill_between(np.arange(1, Tmax+1), conf_bounds_ma_train[:, 0],
+                     conf_bounds_ma_train[:, 1], color='green', alpha=0.3)
+plt.legend()
+plt.title(f'MA({best_q_ma}) oos predictions with horizon T={Tmax}')
+plt.show()
+
+# Rolling oos prediction.
+preds = []
+bounds = []
+for i in test_fd:
+    preds_ma_train_roll, conf_bounds_ma_train_roll = \
+        model_ma_train.predict(n_periods=1, return_conf_int=return_conf_int, alpha=alpha)
+    model_ma_train.update(i)
+    preds.append(preds_ma_train_roll[0])
+    bounds.append(conf_bounds_ma_train_roll[0])
+plt.figure()
+plt.plot(preds, label='predictions', linestyle='--', alpha=0.3)
+plt.plot(test_fd, label='original', alpha=0.7)
+if return_conf_int:
+    bounds = np.array(bounds)
+    plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
+plt.legend()
+plt.title(f'MA({best_q_ma}) {Tmax} rolling oos predictions')
+plt.show()
+
+# # Portmanteau Test to see if the residuals are white noise.
+# lf.portmanteau_test(resid_ma, maxtau, show=True)
 
 # ARMA Model.
 # # Akaike Information Criterion (AIC) for choosing model order.
@@ -349,3 +399,74 @@ plt.show()
 # summary, fittedvalues, resid, model, aic = lf.fit_arima_model(x=fd, p=best_p, q=best_q, d=0, show=True)
 # nrmseV, predM = lf.calculate_fitting_error(fd, model, tmax=10, show=True)
 # lf.portmanteau_test(resid, maxtau, show=True)
+
+# MA Model.
+# Autocorrelation Criterion for choosing model order.
+# Akaike Information Criterion (AIC) for choosing model order.
+print("===============================================================================================================")
+print("Exploring an MA Model for the Time Series:")
+best_aic_arma = np.inf
+best_p_arma = None
+best_q_arma = None
+for p in np.arange(1, 10, dtype=np.int):
+    for q in np.arange(0, 10, dtype=np.int):
+        try:
+            _, _, _, _, aic = lf.fit_arima_model(x=fd, p=p, q=q, d=0, show=False)
+        except ValueError as err:
+            print("----------------------------------------------------------------------------------------------------"
+                  "-----------")
+            print(f'ARMA({p},{q}) Error ---> {err}')
+            continue
+        print("--------------------------------------------------------------------------------------------------------"
+              "-------")
+        print(f'ARMA({p},{q}) AIC ---> {aic}')
+        if aic < best_aic_arma:
+            best_p_arma = q
+            best_q_arma = q
+            best_aic_arma = aic
+best_p_arma = 3
+best_q_arma = 5
+best_aic_arma = np.inf
+summary_arma, fittedvalues_arma, resid_arma, model_arma, aic_arma = \
+    lf.fit_arima_model(x=fd, p=best_p_arma, q=best_q_arma, d=0, show=True)
+print("===============================================================================================================")
+print("Summary of chosen ARMA Model:\n")
+print(summary_arma)
+nrmseV_arma, predM_arma = lf.calculate_fitting_error(fd, model_arma, tmax=10, show=True)
+
+# Out of sample predictions for time horizon Tmax.
+model_arma_train = pm.ARIMA(order=(best_p_arma, best_q_arma, 0))
+model_arma_train.fit(train_fd)
+preds_arma_train, conf_bounds_arma_train = \
+    lf.predict_oos_multistep(model_arma_train, tmax=Tmax, return_conf_int=return_conf_int, alpha=alpha, show=False)
+plt.figure()
+plt.plot(np.arange(1, Tmax+1), preds_arma_train, label='predictions')
+plt.plot(np.arange(1, Tmax+1), test_fd[:Tmax], label='original')
+if return_conf_int:
+    plt.fill_between(np.arange(1, Tmax+1), conf_bounds_arma_train[:, 0],
+                     conf_bounds_arma_train[:, 1], color='green', alpha=0.3)
+plt.legend()
+plt.title(f'ARMA({best_p_arma},{best_q_arma}) oos predictions with horizon T={Tmax}')
+plt.show()
+
+# Rolling oos prediction.
+preds = []
+bounds = []
+for i in test_fd:
+    preds_arma_train_roll, conf_bounds_arma_train_roll = \
+        model_arma_train.predict(n_periods=1, return_conf_int=return_conf_int, alpha=alpha)
+    model_arma_train.update(i)
+    preds.append(preds_arma_train_roll[0])
+    bounds.append(conf_bounds_arma_train_roll[0])
+plt.figure()
+plt.plot(preds, label='predictions', linestyle='--', alpha=0.3)
+plt.plot(test_fd, label='original', alpha=0.7)
+if return_conf_int:
+    bounds = np.array(bounds)
+    plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
+plt.legend()
+plt.title(f'ARMA({best_p_arma},{best_q_arma}) {Tmax} rolling oos predictions')
+plt.show()
+
+# # Portmanteau Test to see if the residuals are white noise.
+# lf.portmanteau_test(resid_ma, maxtau, show=True)
