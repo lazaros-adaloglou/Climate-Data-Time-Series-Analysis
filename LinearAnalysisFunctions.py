@@ -9,6 +9,7 @@ import numpy as np
 
 # Plot Time Series.
 def plot_timeseries(x, value='', title='', savepath='', dates=None, zoomx=False, color='C0'):
+    plt.figure()
     if dates is not None:
         plt.plot(dates, x, color=color, marker='x', linestyle='--', linewidth=1)
         plt.gcf().autofmt_xdate()
@@ -27,6 +28,7 @@ def plot_timeseries(x, value='', title='', savepath='', dates=None, zoomx=False,
 
 # Plot Histogram.
 def plot_histogram(x, value, title='', savepath=''):
+    plt.figure()
     plt.hist(x, alpha=0.8, rwidth=0.9)
     plt.xlabel(value)
     plt.ylabel('Frequency')
@@ -107,7 +109,8 @@ def portmanteau_test(xv, maxtau, show=False):
         ax.axhline(0.05, linestyle='--', color='r')
         ax.set_title('Ljung-Box Portmanteau test')
         ax.set_yticks(np.arange(0, 1.1))
-        plt.show()
+        plt.show(block=False)
+        plt.pause(0.001)
     return lbpv
 
 
@@ -129,7 +132,8 @@ def fit_arima_model(x, p, q, d=0, show=False):
         ax3.hist(resid)
         ax3.set_ylabel('Frequency')
         ax3.set_xlabel('Residuals Histogram')
-        plt.show()
+        plt.show(block=False)
+        plt.pause(0.001)
     return summary, fittedvalues, resid, model, model.aic
 
 
@@ -175,7 +179,8 @@ def calculate_fitting_error(x, model, tmax=20, show=False):
         for i, preds in enumerate(predm[:3]):
             ax.plot(preds, color=colors[i], linestyle='--', label=f'T={i + 1}', alpha=0.7)
         ax.legend(loc='best')
-        plt.show()
+        plt.show(block=False)
+        plt.pause(0.001)
     return nrmsev, predm
 
 

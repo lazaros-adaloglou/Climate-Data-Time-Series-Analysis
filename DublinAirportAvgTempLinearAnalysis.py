@@ -35,14 +35,17 @@ m = len(x_df)
 # Plot Average Temperature.
 lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', 'data/', date_axis)
 plt.show(block=False)
+plt.pause(0.001)
 
 # Average Temperature Histogram.
 lf.plot_histogram(x, 'AvgTemp (°C)', 'Average Temperature Histogram', 'data/')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Plot Zoomed Average Temperature.
 lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature (1998-2014)', 'data/', date_axis, zoomx=True)
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Plot Yearly Mean Average Temperature.
 x_year = []
@@ -54,20 +57,24 @@ for year in range(0, years):
         k = k + x[year * days + day]
     x_year.append(k/days)
 dates_year = range(1942, 2022)
+plt.figure()
 plt.plot(dates_year, x_year, color='red', marker='x', linestyle='--', linewidth=1)
 plt.xlabel('Time (Years)')
 plt.ylabel('AvgTemp (°C)')
 title = 'Yearly Mean Average Temperature'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Average Temperature Autocorrelation.
+plt.figure()
 plot_acf(x, zero=False)
 title = 'Autocorrelation'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Remove Trend.
 # Polynomial Fit.
@@ -82,6 +89,7 @@ for i in range(0, 80 * 12 * 30, 180):
     pol1[i:i + 180] = lf.polynomial_fit(x[i:i + 180], p=p1)
 
 # Plot Polynomial and Breakpoint Fit.
+plt.figure()
 plt.plot(pol)
 plt.plot(pol1)
 plt.plot(x, alpha=0.5)
@@ -90,9 +98,11 @@ plt.legend([f'Polynomial ({p})', f'Breakpoint ({breakpoints})', 'Original'])
 title = f'Polynomial ({p}) and Breakpoint Fit ({breakpoints})'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Plot Polynomial and Linear Breakpoint Detrends.
+plt.figure()
 plt.plot(x-pol, alpha=0.5)
 plt.plot(x[0:28800]-pol1, alpha=0.5)
 plt.legend([f'Polynomial ({p}) Detrended', f'Breakpoint ({breakpoints}) Detrended'])
@@ -100,11 +110,13 @@ title = f'Polynomial ({p}) vs Breakpoint ({breakpoints}) Detrended'
 plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 18000)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Moving Average Filter.
 window = 92
 ma = lf.rolling_window(x=x, window=window)
+plt.figure()
 plt.plot(ma, linestyle='--')
 plt.plot(x, alpha=0.5)
 plt.legend([f'MA ({window})', 'Original'])
@@ -112,7 +124,8 @@ title = f'Moving Average ({window})'
 plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 18000)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Differences of Logarithms (Increment each zero with 0.1).
 logx = []
@@ -128,6 +141,7 @@ fd = np.diff(logx)
 
 # MA vs Differences of Logarithms.
 ma = lf.rolling_window(x, window)
+plt.figure()
 plt.plot(x-ma, alpha=0.5)
 plt.plot(fd, alpha=0.5)
 plt.xlim(15000, 16000)
@@ -135,7 +149,8 @@ title = f'Differences of Logarithms vs MA ({window})'
 plt.title(title, x=0.5, y=1.0)
 plt.legend([f'MA ({window}) Detrended', 'Differences of Logarithms Detrended'])
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Print Yearly Mean Average Temperature of detrended and not time series.
 mas = x - ma
@@ -161,13 +176,15 @@ split = np.array_split(x, 80)
 varis = []
 for i in range(0, len(split)):
     varis.append(statistics.variance(split[i]))
+plt.figure()
 plt.plot(dates_year, varis, color='red', marker='x', linestyle='--', linewidth=1)
 plt.xlabel('Time (Years)')
 plt.ylabel('AvgTemp (°C)')
 title = 'Yearly Variance of Average Temperature'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Print Yearly Variance of Original, Detrended and Log of Detrended Average Temperature.
 split1 = np.array_split(mas, 80)
@@ -184,19 +201,23 @@ for i in range(7, len(varis1), 9):
 fd = np.log(mas + abs(min(mas)) + 1)
 fd = fd - fd.mean()
 # fd = fd[15000:18000]
+plt.figure()
 plt.plot(fd, linestyle='--')
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
 title = 'Logarithms of Detrended Average Temperature Time Series'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
+plt.figure()
 plt.plot(fd)
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
 title = 'Logarithms of Detrended Time Series (Increased Resolution)'
 plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 22000)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 split2 = np.array_split(fd, 80)
 varis2 = []
 for i in range(0, len(split2)):
@@ -228,13 +249,15 @@ acvf = lf.get_acf(fd, lags=maxtau)
 title = 'Autocorrelation for log(X_detrended)'
 plt.title(title, x=0.5, y=1.0)
 plt.savefig(f'{savepath}/{title}.png')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Model Adaption and Forecasting Single Step and Multistep.
 # AR Model.
 # Partial Autocorrelation Criterion for choosing model order.
 pacvf = lf.get_pacf(fd, lags=maxtau)
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Akaike Information Criterion (AIC) for choosing model order.
 print("===============================================================================================================")
@@ -283,7 +306,8 @@ if return_conf_int:
                      conf_bounds_ar_train[:, 1], color='green', alpha=0.3)
 plt.legend()
 plt.title(f'AR({best_p_ar}) oos predictions with horizon T={Tmax}')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Rolling oos prediction.
 preds = []
@@ -302,7 +326,8 @@ if return_conf_int:
     plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
 plt.legend()
 plt.title(f'AR({best_p_ar}) {Tmax} rolling oos predictions')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
 lf.portmanteau_test(resid_ar, maxtau, show=True)
@@ -349,7 +374,8 @@ if return_conf_int:
                      conf_bounds_ma_train[:, 1], color='green', alpha=0.3)
 plt.legend()
 plt.title(f'MA({best_q_ma}) oos predictions with horizon T={Tmax}')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Rolling oos prediction.
 preds = []
@@ -368,7 +394,8 @@ if return_conf_int:
     plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
 plt.legend()
 plt.title(f'MA({best_q_ma}) {Tmax} rolling oos predictions')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
 lf.portmanteau_test(resid_ma, maxtau, show=True)
@@ -420,7 +447,8 @@ if return_conf_int:
                      conf_bounds_arma_train[:, 1], color='green', alpha=0.3)
 plt.legend()
 plt.title(f'ARMA({best_p_arma},{best_q_arma}) oos predictions with horizon T={Tmax}')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Rolling oos prediction.
 preds = []
@@ -439,7 +467,8 @@ if return_conf_int:
     plt.fill_between(np.arange(len(test_fd)), bounds[:, 0], bounds[:, 1], alpha=0.3, color='green')
 plt.legend()
 plt.title(f'ARMA({best_p_arma},{best_q_arma}) {Tmax} rolling oos predictions')
-plt.show()
+plt.show(block=False)
+plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
 lf.portmanteau_test(resid_ma, maxtau, show=True)
