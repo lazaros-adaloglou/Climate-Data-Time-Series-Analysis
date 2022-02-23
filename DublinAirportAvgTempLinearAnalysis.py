@@ -241,7 +241,7 @@ for i in range(0, len(fd_year), 9):
 
 # Hypothesis test for white noise after Detrending with MA (92) and taking the logs.
 # Autocorrelation.
-fd = fd[15000:16000]
+# fd = fd[15000:16000]
 maxtau = 31
 acvf = lf.get_acf(fd, lags=maxtau)
 title = 'Autocorrelation of log(X_detrended)'
