@@ -30,6 +30,7 @@ date_axis = [d.to_pydatetime() for d in dates]
 # Define Average Temperature Time Series.
 x = data.AvgTemp.values
 x_df = pd.DataFrame({data.AvgTemp.name: x})
+m = len(x_df)
 
 # Plot Average Temperature.
 lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', 'data/', date_axis)
@@ -182,6 +183,7 @@ for i in range(7, len(varis1), 9):
     print(varis1[i])
 fd = np.log(mas + abs(min(mas)) + 1)
 fd = fd - fd.mean()
+# fd = fd[15000:18000]
 plt.plot(fd, linestyle='--')
 plt.legend(['Log(X_Detrended+abs(min(X_Detrended)) + 1)-mean'])
 title = 'Logarithms of Detrended Average Temperature Time Series'
@@ -231,7 +233,6 @@ plt.show()
 # Model Adaption and Forecasting Single Step and Multistep.
 # AR Model.
 # Partial Autocorrelation Criterion for choosing model order.
-fd = fd[15000:18000]
 pacvf = lf.get_pacf(fd, lags=maxtau)
 plt.show()
 
@@ -263,7 +264,8 @@ print(summary_ar)
 nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, tmax=10, show=True)
 
 # Out of sample predictions for time horizon Tmax.
-prop = 0.7
+# Split Time Series in train and test set. Test set is the last year (365 days).
+prop = 1-365/m
 split_point = int(prop*fd.shape[0])
 train_fd, test_fd = fd[:split_point], fd[split_point:]
 model_ar_train = pm.ARIMA(order=(best_p_ar, 0, 0))
@@ -326,8 +328,8 @@ for q in np.arange(1, 10, dtype=np.int):
     if aic < best_aic_ma:
         best_q_ma = q
         best_aic_ma = aic
-# best_q_ma = 5
-# best_aic_ma = np.inf
+# best_q_ma = 8
+# best_aic_ma = -2640.548
 summary_ma, fittedvalues_ma, resid_ma, model_ma, aic_ma = lf.fit_arima_model(x=fd, p=0, q=best_q_ma, d=0, show=True)
 print("===============================================================================================================")
 print("Summary of chosen MA Model:\n")
@@ -335,7 +337,7 @@ print(summary_ma)
 nrmseV_ma, predM_ma = lf.calculate_fitting_error(fd, model_ma, tmax=10, show=True)
 
 # Out of sample predictions for time horizon Tmax.
-model_ma_train = pm.ARIMA(order=(0, best_q_ma, 0))
+model_ma_train = pm.ARIMA(order=(0, 0, best_q_ma))
 model_ma_train.fit(train_fd)
 preds_ma_train, conf_bounds_ma_train = \
     lf.predict_oos_multistep(model_ma_train, tmax=Tmax, return_conf_int=return_conf_int, alpha=alpha, show=False)
@@ -406,7 +408,7 @@ print(summary_arma)
 nrmseV_arma, predM_arma = lf.calculate_fitting_error(fd, model_arma, tmax=10, show=True)
 
 # Out of sample predictions for time horizon Tmax.
-model_arma_train = pm.ARIMA(order=(best_p_arma, best_q_arma, 0))
+model_arma_train = pm.ARIMA(order=(best_p_arma, 0, best_q_arma))
 model_arma_train.fit(train_fd)
 preds_arma_train, conf_bounds_arma_train = \
     lf.predict_oos_multistep(model_arma_train, tmax=Tmax, return_conf_int=return_conf_int, alpha=alpha, show=False)
