@@ -2,7 +2,7 @@
 import pandas as pd
 
 # Read Time Series Data from Year 1942 to 2021.
-data = pd.read_csv('data/DublinAirport.csv', delimiter=',', parse_dates=['date'])
+data = pd.read_csv('Data/DublinAirport.csv', delimiter=',', parse_dates=['date'])
 data = data.loc[:, ['date', 'maxtp', 'mintp']]
 data.reset_index(drop=True, inplace=True)
 print("---------------------------------------------------------------------------------------------------------------")
@@ -46,6 +46,6 @@ print(data['AvgTemp'].isnull().sum())
 
 # Export Preprocessed Time Series.
 print("---------------------------------------------------------------------------------------------------------------")
-filename = 'data/DublinAirport_Data.csv'
+filename = 'Data/DublinAirport_Data.csv'
 print('\nData Exported to', filename, '\n')
 data.to_csv(filename)

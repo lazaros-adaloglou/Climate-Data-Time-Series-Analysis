@@ -13,7 +13,7 @@ import os
 warnings.filterwarnings("ignore")
 
 # Load Data.
-filename = 'data/DublinAirport_Data.csv'
+filename = 'Data/DublinAirport_Data.csv'
 try:
     data = pd.read_csv(filename, delimiter=',', parse_dates=['date'])
 except FileNotFoundError:
@@ -21,7 +21,7 @@ except FileNotFoundError:
     data = pd.read_csv(filename, delimiter=',', parse_dates=['date'])
 print("===============================================================================================================")
 print("Average Temperature Time Series:\n")
-savepath = 'data/'
+savepath = 'Figures/'
 data = data.drop("Unnamed: 0", axis=1)
 print(data)
 dates = data.date
@@ -34,7 +34,7 @@ m = len(x_df)
 
 # Plot Average Temperature.
 lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature', 'data/', date_axis)
-plt.show()
+plt.show(block=False)
 
 # Average Temperature Histogram.
 lf.plot_histogram(x, 'AvgTemp (°C)', 'Average Temperature Histogram', 'data/')
