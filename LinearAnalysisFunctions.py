@@ -94,20 +94,6 @@ def get_pacf(xv, lags=10, alpha=0.05, show=True):
     return pacfv
 
 
-# # Computes the periodic time series comprised of repetetive patterns of seasonal components given a time series and
-# # the season (period).
-# def seasonal_components(x, period):
-#     n = x.shape[0]
-#     sv = np.full(shape=(n,), fill_value=np.nan)
-#     monv = np.full(shape=(period,), fill_value=np.nan)
-#     for i in np.arange(period):
-#         monv[i] = np.mean(x[i:n:period])
-#     monv = monv - np.mean(monv)
-#     for i in np.arange(period):
-#         sv[i:n:period] = monv[i] * np.ones(shape=len(np.arange(i, n, period)))
-#     return sv
-
-
 # PORTMANTEAULB hypothesis test (H0) for independence of time series: tests jointly that several autocorrelations
 # are zero. It computes the Ljung-Box statistic of the modified sum of autocorrelations up to a maximum lag, for
 # maximum lags 1,2,...,maxtau.
@@ -152,7 +138,7 @@ def calculate_fitting_error(x, model, tmax=20, show=False):
     nrmsev = np.full(shape=tmax, fill_value=np.nan)
     nobs = len(x)
     xvstd = np.std(x)
-    vartar = np.sum((x - np.mean(x)) ** 2)
+    # vartar = np.sum((x - np.mean(x)) ** 2)
     predm = []
     tmin = np.max([len(model.arparams), len(model.maparams), 1])
     # Start prediction after getting all lags needed from model.
