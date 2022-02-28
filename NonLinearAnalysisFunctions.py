@@ -51,10 +51,12 @@ def macoef2autocorr(phiv, thetav, lags=10):
 
 
 # Plot 3d attractor.
-def plot_3d_attractor(xm):
+def plot_3d_attractor(xm, savepath, title):
     fig = plt.figure(figsize=(14, 8))
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(xm[:, [0]], xm[:, [1]], xm[:, [2]])
+    plt.title(title)
+    plt.savefig(f'{savepath}/{title}.png')
     plt.show()
 
 
@@ -277,7 +279,7 @@ def mi_estimator_ksg1(xv, yv, nnei=5, normalize=False):
 
 def falsenearestneighbors(xv, m_max=10, tau=1, show=False):
     dim = np.arange(1, m_max + 1)
-    f1, _, _ = dimension.fnn(xv, tau=tau, dim=dim, window=10, metric='cityblock')
+    f1, _, _ = dimension.fnn(xv, tau=tau, dim=dim, window=10, metric='cityblock', parallel=False)
     if show:
         fig, ax = plt.subplots(1, 1, figsize=(14, 8))
         ax.scatter(dim, f1)
