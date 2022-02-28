@@ -116,7 +116,7 @@ def portmanteau_test(xv, maxtau, p, d, q, savepath, show=False):
 
 
 # Fit ARIMA(p, d, q) in x returns: summary (table), fittedvalues, residuals, model, AIC.
-def fit_arima_model(x, p, q, d=0, show=False):
+def fit_arima_model(x, p, q, savepath=None, d=0, show=False):
     model = ARIMA(x, order=(p, d, q)).fit()
     summary = model.summary()
     fittedvalues = model.fittedvalues
@@ -134,14 +134,14 @@ def fit_arima_model(x, p, q, d=0, show=False):
         ax3.set_ylabel('Frequency')
         ax3.set_xlabel('Residuals Histogram')
         title = f'ARIMA({p},{d},{q})'
-        plt.savefig(f'Figures/{title}.png')
+        plt.savefig(f'{savepath}/{title}.png')
         plt.show(block=False)
     return summary, fittedvalues, resid, model, model.aic
 
 
 # Calculate fitting error with NRMSE for given model in timeseries x till prediction horizon Tmax. Returns: nrmsev
 # preds: for timesteps T=1, 2, 3.
-def calculate_fitting_error(x, model, p, d, q,  tmax=20, show=False):
+def calculate_fitting_error(x, model, p, d, q, savepath=None,  tmax=20, show=False):
     nrmsev = np.full(shape=tmax, fill_value=np.nan)
     nobs = len(x)
     xvstd = np.std(x)
@@ -174,7 +174,7 @@ def calculate_fitting_error(x, model, p, d, q,  tmax=20, show=False):
         ax.legend()
         ax.set_xlabel('T')
         ax.set_xticks(np.arange(1, tmax))
-        plt.savefig(f'Figures/{title}.png')
+        plt.savefig(f'{savepath}/{title}.png')
         plt.show(block=False)
         # # Plot multistep prediction for T=1, 2, 3
         # fig, ax = plt.subplots(1, 1, figsize=(14, 8))
@@ -184,7 +184,7 @@ def calculate_fitting_error(x, model, p, d, q,  tmax=20, show=False):
         # for i, preds in enumerate(predm[:3]):
         #     ax.plot(preds, color=colors[i], linestyle='--', label=f'T={i + 1}', alpha=0.7)
         # ax.legend(loc='best')
-        # plt.savefig(f'Figures/{title}.png')
+        # plt.savefig(f'{savepath}}/{title}.png')
         # plt.show(block=False)
     return nrmsev, predm
 

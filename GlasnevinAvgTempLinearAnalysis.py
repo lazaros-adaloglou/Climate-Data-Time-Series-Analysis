@@ -21,7 +21,7 @@ except FileNotFoundError:
     data = pd.read_csv(filename, delimiter=',', parse_dates=['date'])
 print("===============================================================================================================")
 print("Average Temperature Time Series:\n")
-savepath = 'Figures/'
+savepath = 'Figures/GlasnevinLin'
 data = data.drop("Unnamed: 0", axis=1)
 print(data)
 dates = data.date
@@ -46,14 +46,14 @@ plt.show(block=False)
 
 # Plot Yearly Mean of Original Time Series.
 x_year = []
-years = 80
+years = 60
 days = 365
 for year in range(0, years):
     k = 0
     for day in range(1, days + 1):
         k = k + x[year * days + day]
     x_year.append(k/days)
-dates_year = range(1942, 2022)
+dates_year = range(1961, 2021)
 plt.figure()
 plt.plot(dates_year, x_year, color='red', marker='x', linestyle='--', linewidth=1)
 plt.xlabel('Time (Years)')
@@ -80,7 +80,7 @@ pol = lf.polynomial_fit(x, p=p)
 p1 = 1
 pol1 = []
 breakpoints = 160
-for i in range(0, 80 * 12 * 30, 180):
+for i in range(0, 60 * 12 * 30, 180):
     pol1[i:i + 180] = lf.polynomial_fit(x[i:i + 180], p=p1)
 
 # Plot Polynomial and Breakpoint Fit.
@@ -100,7 +100,7 @@ plt.show(block=False)
 # Plot Polynomial and Linear Breakpoint Detrends.
 plt.figure()
 plt.plot(x-pol, alpha=0.5)
-plt.plot(x[0:28800]-pol1, alpha=0.5)
+plt.plot(x[0:21600]-pol1, alpha=0.5)
 plt.legend([f'Polynomial ({p}) Detrended', f'Breakpoint ({breakpoints}) Detrended'])
 title = f'Polynomial ({p}) vs Breakpoint ({breakpoints}) Detrended'
 plt.xlabel('Time (Days)')
@@ -154,7 +154,7 @@ plt.show(block=False)
 # Print Yearly Mean Average Temperature of detrended and not time series.
 mas = x - ma
 mas_year = []
-years = 80
+years = 60
 days = 365
 for year in range(0, years):
     k = 0
@@ -171,7 +171,7 @@ for i in range(0, len(mas_year), 9):
 
 # Stabilize Variance.
 # Plot Yearly Variance of Average Temperature.
-split = np.array_split(x, 80)
+split = np.array_split(x, 60)
 varis = []
 for i in range(0, len(split)):
     varis.append(statistics.variance(split[i]))
@@ -215,7 +215,7 @@ plt.title(title, x=0.5, y=1.0)
 plt.xlim(15000, 22000)
 plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=False)
-split2 = np.array_split(fd, 80)
+split2 = np.array_split(fd, 60)
 varis2 = []
 for i in range(0, len(split2)):
     varis2.append(statistics.variance(split2[i]))
@@ -225,7 +225,7 @@ for i in range(7, len(varis2), 9):
 
 # Print Yearly Mean Average Temperature of Logs of detrended time series.
 fd_year = []
-years = 80
+years = 60
 days = 365
 for year in range(0, years):
     k = 0
@@ -241,7 +241,7 @@ for i in range(0, len(fd_year), 9):
 
 # Hypothesis test for white noise after Detrending with MA (92) and taking the logs.
 # Autocorrelation.
-# fd = fd[15000:16000]
+fd = fd[15000:20000]
 maxtau = 31
 acvf = lf.get_acf(fd, lags=maxtau)
 title = 'Autocorrelation of log(X_detrended)'
@@ -280,12 +280,13 @@ for p in np.arange(1, 10):
         best_aic_ar = aic
 # best_p_ar = 3
 # best_aic_ar = -2649.3628420606137
-summary_ar, fittedvalues_ar, resid_ar, model_ar, aic_ar = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, d=0, show=True)
+summary_ar, fittedvalues_ar, resid_ar, model_ar, aic_ar = lf.fit_arima_model(x=fd, p=best_p_ar, q=0, savepath=savepath,
+                                                                             d=0, show=True)
 plt.pause(0.001)
 print("===============================================================================================================")
 print("Summary of chosen AR Model:\n")
 print(summary_ar)
-nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, best_p_ar, 0, 0, tmax=10, show=True)
+nrmseV_ar, predM_ar = lf.calculate_fitting_error(fd, model_ar, best_p_ar, 0, 0, savepath=savepath, tmax=10, show=True)
 plt.pause(0.001)
 
 # Out of sample predictions for time horizon Tmax.
@@ -359,12 +360,13 @@ for q in np.arange(1, 10):
         best_aic_ma = aic
 # best_q_ma = 8
 # best_aic_ma = -2640.548
-summary_ma, fittedvalues_ma, resid_ma, model_ma, aic_ma = lf.fit_arima_model(x=fd, p=0, q=best_q_ma, d=0, show=True)
+summary_ma, fittedvalues_ma, resid_ma, model_ma, aic_ma = lf.fit_arima_model(x=fd, p=0, q=best_q_ma, savepath=savepath,
+                                                                             d=0, show=True)
 plt.pause(0.001)
 print("===============================================================================================================")
 print("Summary of chosen MA Model:\n")
 print(summary_ma)
-nrmseV_ma, predM_ma = lf.calculate_fitting_error(fd, model_ma, 0, 0, best_q_ma, tmax=10, show=True)
+nrmseV_ma, predM_ma = lf.calculate_fitting_error(fd, model_ma, 0, 0, best_q_ma, savepath=savepath, tmax=10, show=True)
 plt.pause(0.001)
 
 # Out of sample predictions for time horizon Tmax.
@@ -438,12 +440,13 @@ for p in np.arange(1, 4):
 # best_q_arma = 5
 # best_aic_arma = np.inf
 summary_arma, fittedvalues_arma, resid_arma, model_arma, aic_arma = \
-    lf.fit_arima_model(x=fd, p=best_p_arma, q=best_q_arma, d=0, show=True)
+    lf.fit_arima_model(x=fd, p=best_p_arma, q=best_q_arma, savepath=savepath, d=0, show=True)
 plt.pause(0.001)
 print("===============================================================================================================")
 print("Summary of chosen ARMA Model:\n")
 print(summary_arma)
-nrmseV_arma, predM_arma = lf.calculate_fitting_error(fd, model_arma, best_p_arma, 0, best_q_arma, tmax=10, show=True)
+nrmseV_arma, predM_arma = lf.calculate_fitting_error(fd, model_arma, best_p_arma, 0, best_q_arma, savepath=savepath,
+                                                     tmax=10, show=True)
 plt.pause(0.001)
 
 # Out of sample predictions for time horizon Tmax.
@@ -488,5 +491,3 @@ plt.pause(0.001)
 
 # Portmanteau Test to see if the residuals are white noise.
 lf.portmanteau_test(resid_arma, maxtau, best_p_arma, 0, best_q_arma, savepath, show=True)
-
-
