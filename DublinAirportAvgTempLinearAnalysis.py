@@ -21,7 +21,7 @@ except FileNotFoundError:
     data = pd.read_csv(filename, delimiter=',', parse_dates=['date'])
 print("===============================================================================================================")
 print("Average Temperature Time Series:\n")
-savepath = 'Figures/'
+savepath = 'Figures/AirportLin/'
 data = data.drop("Unnamed: 0", axis=1)
 print(data)
 dates = data.date
@@ -241,7 +241,7 @@ for i in range(0, len(fd_year), 9):
 
 # Hypothesis test for white noise after Detrending with MA (92) and taking the logs.
 # Autocorrelation.
-# fd = fd[15000:16000]
+fd = fd[15000:16000]
 maxtau = 31
 acvf = lf.get_acf(fd, lags=maxtau)
 title = 'Autocorrelation of log(X_detrended)'
