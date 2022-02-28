@@ -10,7 +10,6 @@ from matplotlib import pyplot as plt
 from sklearn.neighbors import KDTree
 from statsmodels.api import OLS
 from scipy.special import psi
-from nolitsa import dimension
 import statsmodels.api as sm
 from scipy.stats import norm
 import pmdarima as pm
@@ -99,13 +98,6 @@ plt.savefig(f'{savepath}/{title}.png')
 plt.show(block=True)
 plt.pause(0.001)
 
-# # Embed and Plot 3D Attractor.
-# embedded = nlf.embed_data(xV, m=3, tau=1)
-# print(embedded)
-# nlf.plot_3d_attractor(embedded)
-# plt.scatter(embedded[:-1], embedded[1:], linestyle='--', marker='x')
-# plt.show()
-
 # Compute autocorrelation and delayed mutual information.
 # for initial time series
 maxtau = 10
@@ -144,17 +136,18 @@ plt.show()
 
 # Compute Dimension.
 # for initial time series.
-plt.figure(1, figsize=(14, 8))
-dim = np.arange(1, 10 + 1)
-f1, _, _ = dimension.fnn(xV, tau=i[0], dim=dim, window=10, metric='cityblock')
+# plt.figure(1, figsize=(14, 8))
+# dim = np.arange(1, 10 + 1)
+# f1 = nlf.falsenearestneighbors(xV, m_max=10, tau=1, show=False)
+# f1, _, _ = dimension.fnn(xV, tau=1, dim=dim, window=10, metric='cityblock')
 # title = r'FNN for original time series'
 # plt.title(title)
 # plt.xlabel(r'Embedding dimension $d$')
 # plt.ylabel(r'FNN (%)')
-# plt.plot(dim, 100 * f1, 'bo--', label=r'Test I')
-# plt.legend()
+# plt.plot(dim, 100 * f1, 'bo--')
+# plt.legend(r'Test I')
 # plt.savefig(f'{savepath}/{title}.png')
-# plt.show()
+# plt.show(block=True)
 
 # # Correlation Sum
 # plt.figure(figsize=(14, 8))
@@ -186,7 +179,14 @@ f1, _, _ = dimension.fnn(xV, tau=i[0], dim=dim, window=10, metric='cityblock')
 # ax.plot(rvals, csums)
 # ax.set_xlabel('log(r)')
 # ax.set_ylabel('log(C(r))')
-#
+
+# # Embed and Plot 3D Attractor.
+# embedded = nlf.embed_data(xV, m=3, tau=1)
+# print(embedded)
+# nlf.plot_3d_attractor(embedded)
+# plt.scatter(embedded[:-1], embedded[1:], linestyle='--', marker='x')
+# plt.show()
+
 # # Predictions
 # # - LAP
 # # - LLP
