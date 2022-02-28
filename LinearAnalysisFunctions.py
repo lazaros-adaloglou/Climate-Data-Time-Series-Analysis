@@ -111,7 +111,7 @@ def portmanteau_test(xv, maxtau, p, d, q, savepath, show=False):
         ax.set_title(title)
         ax.set_yticks(np.arange(0, 1.1))
         plt.savefig(f'{savepath}/{title}.png')
-        plt.show(block=False)
+        plt.show(block=True)
     return lbpv
 
 

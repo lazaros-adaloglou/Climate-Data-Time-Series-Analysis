@@ -234,31 +234,6 @@ def localfitnrmse(xv, tau, m, tmax, nnei, q, show=''):
     return nrmsev, prem
 
 
-# Plot Time Series.
-def plot_timeseries(xv, get_histogram=False, title='', savepath=''):
-    fig, ax = plt.subplots(1, 1, figsize=(14, 8))
-    ax.plot(xv, marker='x', linestyle='--', linewidth=2)
-    ax.set_xlabel('time')
-    ax.set_ylabel('value')
-    if len(title) > 0:
-        ax.set_title(title, x=0.5, y=1.0)
-    plt.tight_layout()
-    if len(savepath) > 0:
-        plt.savefig(f'{savepath}/{title}_xM.jpeg')
-    # Plot Histogram.
-    if get_histogram:
-        fig, ax = plt.subplots(1, 1, figsize=(14, 8))
-        ax.hist(xv, alpha=0.8, rwidth=0.9)
-        ax.set_xlabel('value')
-        ax.set_title('Histogram')
-        plt.tight_layout()
-        if len(title) > 0:
-            ax.set_title(title, x=0.5, y=1.0)
-        plt.tight_layout()
-        if len(savepath) > 0:
-            plt.savefig(f'{savepath}/{title}_hist.jpeg')
-
-
 # Helper Function.
 def ann(x, k):
     tree = KDTree(x, leaf_size=1, metric='chebyshev')
@@ -354,17 +329,3 @@ def logisticmap(n=1024, r=3., x0=None):
     xv = xv[ntrans:, [0]]
     return xv.reshape(-1, )
 
-
-# Create an ARMA(p,q) time series of length 'n' with Gaussian input noise. Note that phiV = [phi(0) phi(1) ... phi(p)]'
-# and phi(0) is the constant term, and thetaV = [theta(1) ... theta(q)]'. sdnoise is the SD of the input noise (if left
-# out then sdnoise=1). The generating ARMA(p,q) process reads x(t) = phi(0) + phi(1)*x(t-1) + ... + phi(p)*x(t-p) +
-# + z(t) - theta(1)*z(t-1) + ... - theta(q)*z(t-p), z(t) ~ WN(0,sdnoise^2).
-def generate_arma_ts(phiv, thetav, n, sdnoise=1):
-    phiv = np.array(phiv)
-    thetav = np.array(thetav)
-    # Add Zero Lag.
-    ar_params = np.r_[1, -phiv[:]]
-    # Add Zero Lag.
-    ma_params = np.r_[1, thetav[:]]
-    xv = arma_generate_sample(ar=ar_params, ma=ma_params, nsample=n, scale=sdnoise, burnin=100)
-    return xv
