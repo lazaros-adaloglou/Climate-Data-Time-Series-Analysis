@@ -44,7 +44,7 @@ plt.show(block=False)
 lf.plot_timeseries(x, 'AvgTemp (°C)', 'Average Temperature (1998-2014)', savepath, date_axis, zoomx=True)
 plt.show(block=False)
 
-# Plot Yearly Mean of Original Time Series.
+# Plot Yearly Mean of Original Time Series
 x_year = []
 years = 80
 days = 365
