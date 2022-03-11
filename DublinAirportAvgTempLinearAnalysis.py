@@ -83,7 +83,7 @@ breakpoints = 160
 for i in range(0, 80 * 12 * 30, 180):
     pol1[i:i + 180] = lf.polynomial_fit(x[i:i + 180], p=p1)
 
-# Plot Polynomial and Breakpoint Fit.
+# Plot Polynomial and Breakpoint Fit
 plt.figure()
 plt.plot(pol)
 plt.plot(pol1)
